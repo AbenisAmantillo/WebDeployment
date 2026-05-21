@@ -1,0 +1,155 @@
+{% extends 'layouts/admin_layout.html.twig' %}
+
+{% block title %}Process Payment{% endblock %}
+
+{% block content %}
+<div class="transaction-container">
+    <div class="transaction-header-section">
+        <div class="header-left">
+            <h1>Process Payment</h1>
+            <p>Transaction #{{ transaction.id }} - {{ transaction.propertyName }}</p>
+        </div>
+    </div>
+
+    <div class="transaction-section" style="max-width: 800px; margin: 0 auto;">
+        <!-- Transaction Details -->
+        <div style="background: white; border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <h3 style="margin-bottom: 1rem; color: #1f2937;">Transaction Details</h3>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                <div>
+                    <label style="color: #6b7280; font-size: 0.875rem;">Customer</label>
+                    <p style="font-weight: 600; color: #1f2937;">{{ transaction.customerName }}</p>
+                </div>
+                <div>
+                    <label style="color: #6b7280; font-size: 0.875rem;">Property</label>
+                    <p style="font-weight: 600; color: #1f2937;">{{ transaction.propertyName }}</p>
+                </div>
+                <div>
+                    <label style="color: #6b7280; font-size: 0.875rem;">Purchase Type</label>
+                    <p style="font-weight: 600; color: #1f2937;">{{ transaction.purchaseType|capitalize }}</p>
+                </div>
+                <div>
+                    <label style="color: #6b7280; font-size: 0.875rem;">Total Price</label>
+                    <p style="font-weight: 600; color: #1f2937; font-size: 1.25rem;">₱{{ total_price|number_format(2, '.', ',') }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Form -->
+        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            {{ form_start(form) }}
+
+            {% if is_rent %}
+                <!-- Rental Payment Plan -->
+                <div style="margin-bottom: 2rem;">
+                    <h3 style="margin-bottom: 1rem; color: #1f2937;">Rental Payment Plan</h3>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        {{ form_label(form.downpayment) }}
+                        {{ form_widget(form.downpayment, {'attr': {'placeholder': 'Enter downpayment amount'}}) }}
+                        {{ form_errors(form.downpayment) }}
+                        <small style="color: #6b7280; display: block; margin-top: 0.5rem;">
+                            Maximum: ₱{{ total_price|number_format(2, '.', ',') }}
+                        </small>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        {{ form_label(form.paymentPlan) }}
+                        {{ form_widget(form.paymentPlan, {'attr': {'class': 'payment-plan-select'}}) }}
+                        {{ form_errors(form.paymentPlan) }}
+                    </div>
+
+                    <!-- Monthly Payment Calculation Display -->
+                    <div id="monthly-payment-info" style="background: #f3f4f6; padding: 1rem; border-radius: 8px; margin-top: 1rem; display: none;">
+                        <h4 style="margin-bottom: 0.5rem; color: #1f2937;">Payment Summary</h4>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                            <div>
+                                <label style="color: #6b7280; font-size: 0.875rem;">Downpayment</label>
+                                <p style="font-weight: 600; color: #1f2937;" id="downpayment-display">₱0.00</p>
+                            </div>
+                            <div>
+                                <label style="color: #6b7280; font-size: 0.875rem;">Remaining Amount</label>
+                                <p style="font-weight: 600; color: #1f2937;" id="remaining-display">₱{{ total_price|number_format(2, '.', ',') }}</p>
+                            </div>
+                            <div>
+                                <label style="color: #6b7280; font-size: 0.875rem;">Monthly Payment</label>
+                                <p style="font-weight: 600; color: #10b981; font-size: 1.125rem;" id="monthly-display">₱0.00</p>
+                            </div>
+                            <div>
+                                <label style="color: #6b7280; font-size: 0.875rem;">Total Months</label>
+                                <p style="font-weight: 600; color: #1f2937;" id="months-display">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <!-- Buy Transaction: Single Payment -->
+                <div style="margin-bottom: 2rem;">
+                    <h3 style="margin-bottom: 1rem; color: #1f2937;">Payment Amount</h3>
+                    <div style="background: #f3f4f6; padding: 1.5rem; border-radius: 8px;">
+                        <p style="font-size: 1.5rem; font-weight: 600; color: #1f2937;">
+                            ₱{{ total_price|number_format(2, '.', ',') }}
+                        </p>
+                        <small style="color: #6b7280;">Full payment amount</small>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Payment Method -->
+            <div style="margin-bottom: 2rem;">
+                {{ form_label(form.paymentMethod) }}
+                {{ form_widget(form.paymentMethod) }}
+                {{ form_errors(form.paymentMethod) }}
+            </div>
+
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <a href="{{ path('app_transaction_index') }}" class="btn btn-secondary" style="padding: 0.75rem 1.5rem;">
+                    Cancel
+                </a>
+                <button type="submit" class="btn btn-primary" style="padding: 0.75rem 1.5rem;">
+                    Process Payment
+                </button>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+
+{% if is_rent %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const totalPrice = {{ total_price }};
+    const downpaymentInput = document.querySelector('input[name="payment[downpayment]"]');
+    const paymentPlanSelect = document.querySelector('select[name="payment[paymentPlan]"]');
+    const monthlyInfo = document.getElementById('monthly-payment-info');
+    const downpaymentDisplay = document.getElementById('downpayment-display');
+    const remainingDisplay = document.getElementById('remaining-display');
+    const monthlyDisplay = document.getElementById('monthly-display');
+    const monthsDisplay = document.getElementById('months-display');
+
+    function calculateMonthlyPayment() {
+        const downpayment = parseFloat(downpaymentInput.value) || 0;
+        const months = parseInt(paymentPlanSelect.value) || 0;
+
+        if (downpayment >= 0 && months > 0) {
+            const remaining = totalPrice - downpayment;
+            const monthly = remaining / months;
+
+            downpaymentDisplay.textContent = '₱' + downpayment.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            remainingDisplay.textContent = '₱' + remaining.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            monthlyDisplay.textContent = '₱' + monthly.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            monthsDisplay.textContent = months + ' months';
+            monthlyInfo.style.display = 'block';
+        } else {
+            monthlyInfo.style.display = 'none';
+        }
+    }
+
+    downpaymentInput.addEventListener('input', calculateMonthlyPayment);
+    paymentPlanSelect.addEventListener('change', calculateMonthlyPayment);
+});
+</script>
+{% endif %}
+{% endblock %}
+

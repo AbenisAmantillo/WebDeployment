@@ -1,0 +1,102 @@
+{% extends 'layouts/admin_layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('app') }}
+{% endblock %}
+
+{% block title %}Property Listings{% endblock %}
+
+{% block content %}
+<div class="listing-container">
+
+    <!-- Filters Section -->
+    <div class="listing-filters">
+        <form method="get" action="{{ path('app_listing') }}">
+
+            <!-- Listing Type Filter -->
+            <div class="filter-group">
+                <label class="filter-label" for="listingType">Listing Type:</label>
+                <select class="filter-select" id="listingType" name="listingType" onchange="this.form.submit()">
+                    <option value="">All Listings</option>
+                    {% for type in filters.listingType %}
+                        <option value="{{ type }}" {% if selectedListingType == type %}selected{% endif %}>
+                            {{ type }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <!-- Status Filter -->
+            <div class="filter-group">
+                <label class="filter-label" for="status">Status:</label>
+                <select class="filter-select" id="status" name="status" onchange="this.form.submit()">
+                    <option value="">All Status</option>
+                    {% for status in filters.status %}
+                        <option value="{{ status }}" {% if selectedStatus == status %}selected{% endif %}>
+                            {{ status }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Property / Furniture Grid -->
+    <div class="listing-grid">
+        {% if properties is empty %}
+            <div class="listing-empty">
+                <h3>No Listings Found</h3>
+                <p>Try adjusting your filters or check back later for new listings.</p>
+            </div>
+        {% else %}
+            {% for item in properties %}
+                {# Detect type dynamically #}
+                {% if item.getType is defined and item.getType() == 'Furniture' %}
+                    {% set imgSrc = item.image ? 'uploads/furniture/' ~ item.image : 'images/default-property.jpg' %}
+                    {% set title = item.name %}
+                    {% set showStatus = true %}
+                    {% set showAddress = false %}
+                {% else %}
+                    {% set imgSrc = item.imageFileName ? 'uploads/property_images/' ~ item.imageFileName : 'images/default-property.jpg' %}
+                    {% set title = item.title %}
+                    {% set showStatus = true %}
+                    {% set showAddress = true %}
+                {% endif %}
+
+                <div class="property-card">
+                    <div class="property-image">
+                        <img src="{{ asset(imgSrc) }}" alt="{{ title }}">
+
+                        {% if showStatus %}
+                            <span class="property-status {% if item.status == 'For Sale' %}status-for-sale{% elseif item.status == 'For Rent' %}status-for-rent{% elseif item.status == 'Available' %}status-available{% elseif item.status == 'Pending' %}status-pending{% elseif item.status == 'Sold' %}status-sold{% endif %}">
+                                {{ item.status }}
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="property-details">
+                        <h3 class="property-title">{{ title }}</h3>
+
+                        {% if showAddress %}
+                            <p class="property-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                {{ item.address }}
+                            </p>
+                        {% endif %}
+
+                        <div class="property-price">
+                            ${{ item.price|number_format }}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('app') }}
+{% endblock %}

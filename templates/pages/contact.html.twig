@@ -1,0 +1,75 @@
+{% extends 'layouts/marketing_layout.html.twig' %}
+
+{% block title %}Contact Us | The Amantillo Property Co.{% endblock %}
+
+{% set marketing_nav = 'contact' %}
+
+{% block marketing_body %}
+    <main class="simple-page">
+        <section class="simple-page-hero">
+            <div class="simple-page-hero-inner">
+                <p class="hero-kicker" style="margin-bottom:0.65rem;">Get in touch</p>
+                <h1>Contact us</h1>
+                <p>Tell us what you're looking for — we'll respond as soon as we can.</p>
+            </div>
+        </section>
+
+        <section class="simple-page-content">
+            <div class="simple-page-grid simple-page-grid--contact">
+                <div class="simple-page-card simple-page-card--sticky">
+                    <div class="simple-page-kicker">Reach us</div>
+                    <h2>We're here to help</h2>
+                    <p>Questions about a listing, partnership, or viewing? Our team is happy to assist.</p>
+                    <ul class="contact-details-list">
+                        <li>
+                            <span class="contact-details-icon" aria-hidden="true">✉️</span>
+                            <span>
+                                <strong>Email</strong>
+                                info@theamantillopropertyco.com
+                            </span>
+                        </li>
+                        <li>
+                            <span class="contact-details-icon" aria-hidden="true">📞</span>
+                            <span>
+                                <strong>Phone</strong>
+                                +63 939 123 4567
+                            </span>
+                        </li>
+                        <li>
+                            <span class="contact-details-icon" aria-hidden="true">📍</span>
+                            <span>
+                                <strong>Office</strong>
+                                Poblacion, Pamplona, Negros Oriental
+                            </span>
+                        </li>
+                    </ul>
+                    <p class="contact-hours">Office hours: Mon–Sat, 9:00 AM – 6:00 PM</p>
+                </div>
+
+                <div class="simple-page-card">
+                    <h2>Send a message</h2>
+                    <p>Fill out the form below and our team will get back to you shortly.</p>
+                    <div class="contact-form">
+                        <div class="contact-form-embed">
+                            <iframe
+                                src="https://docs.google.com/forms/d/e/1FAIpQLScgSNOA-sXvAk2E9eE8teH_YrZSfy851Q3lIyB8-WKUf9-tkg/viewform?embedded=true"
+                                title="Contact form"
+                                loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade"
+                            ></iframe>
+                        </div>
+
+                        <div class="simple-page-cta simple-page-cta--start">
+                            <a class="btn btn-signup" href="https://docs.google.com/forms/d/e/1FAIpQLScgSNOA-sXvAk2E9eE8teH_YrZSfy851Q3lIyB8-WKUf9-tkg/viewform?usp=header" target="_blank" rel="noopener noreferrer">Open form in new tab</a>
+                            <a href="{{ path('landing_page') }}" class="btn btn-outline">Back to home</a>
+                        </div>
+
+                        <p class="contact-form-note">
+                            If the form does not load, use the button above to open it in a new tab.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+{% endblock %}

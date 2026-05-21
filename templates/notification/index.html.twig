@@ -1,0 +1,54 @@
+{% extends 'layouts/admin_layout.html.twig' %}
+
+{% block title %}Client Notifications{% endblock %}
+
+{% block content %}
+<div class="admin-page clients-container">
+    {% include 'partials/admin_page_header.html.twig' with {
+        kicker: 'Administration',
+        title: 'Client notifications',
+        description: 'Messages delivered to clients via the mobile app',
+        actions_html: '<a href="' ~ path('app_notification_new') ~ '" class="btn btn-primary" style="color:#0f1c2e;background:#c9a227;border-color:#c9a227;">Send notification</a>'
+    } only %}
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="admin-flash admin-flash--{{ label == 'error' ? 'error' : (label == 'success' ? 'success' : 'info') }}">{{ message }}</div>
+        {% endfor %}
+    {% endfor %}
+
+    <p class="admin-table-hint">Scroll horizontally if columns are cut off →</p>
+    <div class="table-wrapper">
+        {% if notifications is empty %}
+            <div class="empty-state" style="padding:3rem;">
+                <h3>No notifications yet</h3>
+                <p>Send your first message to a client.</p>
+                <a href="{{ path('app_notification_new') }}" class="btn btn-primary" style="margin-top:1rem;">Send notification</a>
+            </div>
+        {% else %}
+            <table class="property-table property-table--wide">
+                <thead>
+                    <tr>
+                        <th class="col-title">Client</th>
+                        <th class="col-title">Title</th>
+                        <th class="col-location">Message</th>
+                        <th class="col-price">Sent at</th>
+                        <th class="col-title">By</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for notification in notifications %}
+                        <tr>
+                            <td class="col-title"><strong>{{ notification.recipient.username }}</strong></td>
+                            <td class="col-title">{{ notification.title ?: '—' }}</td>
+                            <td class="col-location">{{ notification.message }}</td>
+                            <td class="col-price">{{ notification.createdAt|date('Y-m-d H:i') }}</td>
+                            <td class="col-title">{{ notification.createdBy ? notification.createdBy.username : '—' }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

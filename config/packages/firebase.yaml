@@ -1,0 +1,6 @@
+kreait_firebase:
+    projects:
+        app:
+            credentials: '%env(FIREBASE_CREDENTIALS)%'
+            default: true
+            verifier_cache: cache.app

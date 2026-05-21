@@ -1,0 +1,350 @@
+{% extends 'client_dashboard/layout.html.twig' %}
+
+{% block title %}Payments{% endblock %}
+
+{% block portal_hero %}
+<section class="portal-hero portal-hero--compact">
+    <div class="portal-hero-inner">
+        <a href="{{ path('app_client_dashboard') }}" class="portal-btn-back" style="margin-bottom:1rem;color:#fff;border-color:rgba(255,255,255,0.35);background:rgba(255,255,255,0.1);">← Back to listings</a>
+        <p class="portal-hero-kicker">Secure checkout</p>
+        <h1>Start your purchase</h1>
+        <p class="portal-hero-lead">Select furnishings, choose a payment plan, and submit your downpayment</p>
+    </div>
+</section>
+{% endblock %}
+
+{% block portal_content %}
+    <div class="portal-payments">
+        {% if selected_property %}
+            <div class="transaction-section" style="margin-bottom: 2rem;">
+                <div class="transaction-header">
+                    <h3 class="section-title-modern">Selected Property</h3>
+                </div>
+                <div style="background: #fff; border-radius: 12px; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between;">
+                    <div>
+                        <div style="font-weight: 700; color: #111827; font-size: 1.05rem;">{{ selected_property.title }}</div>
+                        <div style="color: #6b7280; margin-top: 0.25rem;">📍 {{ selected_property.address }}</div>
+                    </div>
+                    <div style="font-weight: 800; color: #111827; font-size: 1.15rem;">
+                        ₱{{ selected_property.price|number_format(0, '.', ',') }}
+                    </div>
+                </div>
+                <div style="margin-top: 1rem; background: #fff; border-radius: 12px; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                        <div style="font-weight: 800; color: #111827;">Add Furniture (Optional)</div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="color: #6b7280; font-weight: 700;">Furniture total:</span>
+                            <span id="furniture-total-inline" style="font-weight: 900; color: #10b981;">₱0.00</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 0.35rem; color: #6b7280; font-size: 0.9rem;">
+                        Choose furniture you want to include with this property.
+                    </div>
+
+                    {% if available_furniture is defined and available_furniture|length > 0 %}
+                        <div style="margin-top: 1rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.75rem;">
+                            {% for furniture in available_furniture %}
+                                {% set isOutOfStock = furniture.stock is not null and furniture.stock <= 0 %}
+                                {% set maxQty = furniture.stock is not null ? furniture.stock : null %}
+                                <label style="display: flex; gap: 0.75rem; align-items: flex-start; padding: 0.9rem; border: 2px solid #e5e7eb; border-radius: 12px; background: {{ isOutOfStock ? '#f9fafb' : 'white' }}; opacity: {{ isOutOfStock ? '0.6' : '1' }};">
+                                    <input
+                                        type="checkbox"
+                                        class="furniture-checkbox"
+                                        value="{{ furniture.id }}"
+                                        data-price="{{ furniture.price }}"
+                                        {{ isOutOfStock ? 'disabled' : '' }}
+                                        style="margin-top: 0.15rem; width: 18px; height: 18px; cursor: pointer;"
+                                    >
+                                    <div style="flex: 1;">
+                                        <div style="font-weight: 800; color: #111827; line-height: 1.2;">{{ furniture.name }}</div>
+                                        <div style="margin-top: 0.25rem; display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+                                            <span style="font-weight: 900; color: #111827;">₱{{ furniture.price|number_format(2, '.', ',') }}</span>
+                                            <span style="color: #6b7280;">•</span>
+                                            <span style="color: #6b7280;">Status: {{ furniture.status }}</span>
+                                            <span style="color: #6b7280;">•</span>
+                                            <span style="color: #6b7280;">Stock: {{ furniture.stock ?? 'N/A' }}</span>
+                                        </div>
+                                        <div style="margin-top: 0.75rem; display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+                                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                <span style="color: #6b7280; font-weight: 700;">Qty:</span>
+                                                <input
+                                                    type="number"
+                                                    class="furniture-qty"
+                                                    form="client-transaction-form"
+                                                    name="furniture_quantities[{{ furniture.id }}]"
+                                                    value="0"
+                                                    min="0"
+                                                    {% if maxQty is not null %}max="{{ maxQty }}"{% endif %}
+                                                    data-price="{{ furniture.price }}"
+                                                    {{ isOutOfStock ? 'disabled' : '' }}
+                                                    style="width: 88px; padding: 8px 10px; border: 2px solid #e5e7eb; border-radius: 10px; font-weight: 800; color: #111827;"
+                                                >
+                                            </div>
+                                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                <span style="color: #6b7280; font-weight: 700;">Subtotal:</span>
+                                                <span class="furniture-subtotal" style="font-weight: 900; color: #111827;">₱0.00</span>
+                                            </div>
+                                        </div>
+                                        {% if isOutOfStock %}
+                                            <div style="margin-top: 0.35rem; color: #ef4444; font-weight: 700; font-size: 0.85rem;">Out of stock</div>
+                                        {% endif %}
+                                    </div>
+                                </label>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div style="margin-top: 1rem; color: #6b7280;">
+                            No furniture available right now.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="transaction-section">
+            <div class="transaction-header">
+                <h3 class="section-title-modern">Make a Payment</h3>
+            </div>
+
+            <form id="client-transaction-form" style="max-width: 800px; margin: 0 auto;" method="post" action="{{ path('app_client_create_transaction') }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('client_create_transaction') }}">
+                {% if selected_property %}
+                    <input type="hidden" name="property_id" value="{{ selected_property.id }}">
+                {% endif %}
+                <!-- Totals Summary -->
+                <div style="margin-bottom: 2rem; background: #fff; border-radius: 12px; padding: 1.1rem 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem; align-items: center;">
+                    <div style="display: flex; justify-content: space-between; gap: 0.75rem;">
+                        <span style="color: #6b7280; font-weight: 800;">Property total</span>
+                        <span id="property-total" style="font-weight: 900; color: #111827;">
+                            ₱{{ selected_property ? selected_property.price|number_format(2, '.', ',') : '0.00' }}
+                        </span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; gap: 0.75rem;">
+                        <span style="color: #6b7280; font-weight: 800;">Furniture total</span>
+                        <span id="furniture-total" style="font-weight: 900; color: #10b981;">₱0.00</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; gap: 0.75rem; border-left: 2px dashed #e5e7eb; padding-left: 0.75rem;">
+                        <span style="color: #111827; font-weight: 900;">Total</span>
+                        <span id="grand-total" style="font-weight: 950; color: #2563eb;">₱0.00</span>
+                    </div>
+                </div>
+
+                {% if selected_property %}
+                    <!-- Selected Property (Read-only) -->
+                    <div style="margin-bottom: 2rem;">
+                        <label style="display: block; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem; font-size: 0.95rem;">
+                            Property
+                        </label>
+                        <div style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem; background: #f9fafb; color: #111827;">
+                            {{ selected_property.title }} — ₱{{ selected_property.price|number_format(0, '.', ',') }} ({{ selected_property.address }})
+                        </div>
+                    </div>
+                {% else %}
+                    <!-- Property Selection (fallback if no selected property) -->
+                    <div style="margin-bottom: 2rem;">
+                        <label style="display: block; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem; font-size: 0.95rem;">
+                            Select Property <span style="color: #ef4444;">*</span>
+                        </label>
+                        <select name="property" id="property-select" required style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem; background: white; color: #1f2937; transition: border-color 0.3s;">
+                            <option value="">-- Choose a Property --</option>
+                            {% for property in all_properties %}
+                                <option value="{{ property.id }}" data-price="{{ property.price }}">
+                                    {{ property.title }} - ₱{{ property.price|number_format(0, '.', ',') }} ({{ property.address }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <p style="margin-top: 0.5rem; color: #6b7280; font-size: 0.875rem;">
+                            Changing the selected property will reload this page with the chosen property.
+                        </p>
+                    </div>
+                {% endif %}
+
+                <!-- Downpayment Amount -->
+                <div style="margin-bottom: 2rem;">
+                    <label style="display: block; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem; font-size: 0.95rem;">
+                        Downpayment Amount <span style="color: #ef4444;">*</span>
+                    </label>
+                    <div style="position: relative;">
+                        <span style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #6b7280; font-weight: 600;">₱</span>
+                        <input type="number" name="amount" id="payment-amount" required step="0.01" min="0.01"
+                               placeholder="0.00"
+                               style="width: 100%; padding: 12px 16px 12px 40px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s;">
+                    </div>
+                    <p style="margin-top: 0.5rem; color: #6b7280; font-size: 0.875rem;">Enter the downpayment amount you wish to pay</p>
+                </div>
+
+                <!-- Payment Plan -->
+                <div style="margin-bottom: 2rem;">
+                    <label style="display: block; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem; font-size: 0.95rem;">
+                        Payment Plan <span style="color: #ef4444;">*</span>
+                    </label>
+                    <select name="payment_plan" required style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem; background: white; color: #1f2937; transition: border-color 0.3s;">
+                        <option value="">-- Choose a Plan --</option>
+                        <option value="12">12 Months</option>
+                        <option value="24">24 Months</option>
+                        <option value="36">36 Months</option>
+                    </select>
+                    <p style="margin-top: 0.5rem; color: #6b7280; font-size: 0.875rem;">Choose how many months to pay the remaining balance</p>
+                </div>
+
+                <!-- Payment Method Selection -->
+                <div style="margin-bottom: 2rem;">
+                    <label style="display: block; font-weight: 600; color: #1f2937; margin-bottom: 1rem; font-size: 0.95rem;">
+                        Payment Method <span style="color: #ef4444;">*</span>
+                    </label>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <label style="display: flex; align-items: center; padding: 1rem; border: 2px solid #e5e7eb; border-radius: 12px; cursor: pointer; transition: all 0.3s; background: white;">
+                            <input type="radio" name="payment_method" value="debit_card" required style="margin-right: 0.75rem; width: 20px; height: 20px; cursor: pointer;">
+                            <div>
+                                <div style="font-weight: 600; color: #1f2937; margin-bottom: 0.25rem;">💳 Debit Card</div>
+                                <div style="font-size: 0.875rem; color: #6b7280;">Visa, Mastercard</div>
+                            </div>
+                        </label>
+
+                        <label style="display: flex; align-items: center; padding: 1rem; border: 2px solid #e5e7eb; border-radius: 12px; cursor: pointer; transition: all 0.3s; background: white;">
+                            <input type="radio" name="payment_method" value="mobile_transfer" required style="margin-right: 0.75rem; width: 20px; height: 20px; cursor: pointer;">
+                            <div>
+                                <div style="font-weight: 600; color: #1f2937; margin-bottom: 0.25rem;">📱 Mobile Transfer</div>
+                                <div style="font-size: 0.875rem; color: #6b7280;">GCash, PayMaya</div>
+                            </div>
+                        </label>
+
+                        <label style="display: flex; align-items: center; padding: 1rem; border: 2px solid #e5e7eb; border-radius: 12px; cursor: pointer; transition: all 0.3s; background: white;">
+                            <input type="radio" name="payment_method" value="bank_transfer" required style="margin-right: 0.75rem; width: 20px; height: 20px; cursor: pointer;">
+                            <div>
+                                <div style="font-weight: 600; color: #1f2937; margin-bottom: 0.25rem;">🏦 Bank Transfer</div>
+                                <div style="font-size: 0.875rem; color: #6b7280;">Direct deposit</div>
+                            </div>
+                        </label>
+
+                        <label style="display: flex; align-items: center; padding: 1rem; border: 2px solid #e5e7eb; border-radius: 12px; cursor: pointer; transition: all 0.3s; background: white;">
+                            <input type="radio" name="payment_method" value="cash" required style="margin-right: 0.75rem; width: 20px; height: 20px; cursor: pointer;">
+                            <div>
+                                <div style="font-weight: 600; color: #1f2937; margin-bottom: 0.25rem;">💵 Cash</div>
+                                <div style="font-size: 0.875rem; color: #6b7280;">In-person payment</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Additional Details -->
+                <div style="margin-bottom: 2rem;">
+                    <label style="display: block; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem; font-size: 0.95rem;">
+                        Payment Reference/Notes (Optional)
+                    </label>
+                    <textarea name="notes" rows="3"
+                              placeholder="Add any payment reference number or notes..."
+                              style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem; font-family: inherit; resize: vertical; transition: border-color 0.3s;"></textarea>
+                </div>
+
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button type="button" onclick="resetForm()"
+                            style="padding: 12px 24px; background: #f3f4f6; color: #374151; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                        Reset
+                    </button>
+                    <button type="submit"
+                            style="padding: 12px 32px; background: #3b82f6; color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);">
+                        Continue
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block portal_scripts %}
+    <script>
+        function resetForm() {
+            document.querySelector('form').reset();
+            document.getElementById('payment-amount').value = '';
+        }
+
+        function fillAmountFromSelectedProperty() {
+            const select = document.getElementById('property-select');
+            // We no longer auto-fill downpayment when a property is already selected.
+            // Keep the old behavior only for the fallback dropdown (when no selected_property).
+            if (!select) return;
+            const option = select.options[select.selectedIndex];
+            const price = option ? option.getAttribute('data-price') : null;
+            if (price) {
+                document.getElementById('payment-amount').value = '';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const select = document.getElementById('property-select');
+            fillAmountFromSelectedProperty();
+
+            if (select) {
+                select.addEventListener('change', function() {
+                    // reload page with selected property (keeps behavior consistent with "clicked property = selected")
+                    const value = this.value;
+                    if (!value) return;
+                    window.location.href = {{ path('app_client_payments')|json_encode|raw }} + '/' + value;
+                });
+            }
+
+            function updateFurnitureTotal() {
+                const checkboxes = document.querySelectorAll('.furniture-checkbox');
+                const qtyInputs = document.querySelectorAll('.furniture-qty');
+                let total = 0;
+                qtyInputs.forEach(input => {
+                    const qty = parseInt(input.value || '0', 10) || 0;
+                    const p = parseFloat(input.getAttribute('data-price')) || 0;
+                    total += (qty * p);
+
+                    const subtotalEl = input.closest('label')?.querySelector('.furniture-subtotal');
+                    if (subtotalEl) {
+                        subtotalEl.textContent = '₱' + (qty * p).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    }
+                });
+                const elMain = document.getElementById('furniture-total');
+                if (elMain) elMain.textContent = '₱' + total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                const elInline = document.getElementById('furniture-total-inline');
+                if (elInline) elInline.textContent = '₱' + total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+                const propertyTotal = {{ selected_property ? selected_property.price : 0 }};
+                const grand = (parseFloat(propertyTotal) || 0) + total;
+                const elGrand = document.getElementById('grand-total');
+                if (elGrand) {
+                    elGrand.textContent = '₱' + grand.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                }
+
+                // keep checkbox state in sync with qty (>0 means selected)
+                checkboxes.forEach(cb => {
+                    const qty = cb.closest('label')?.querySelector('.furniture-qty');
+                    if (!qty) return;
+                    const q = parseInt(qty.value || '0', 10) || 0;
+                    cb.checked = q > 0;
+                });
+            }
+
+            document.querySelectorAll('.furniture-checkbox').forEach(cb => {
+                cb.addEventListener('change', function() {
+                    const qty = this.closest('label')?.querySelector('.furniture-qty');
+                    if (!qty) return updateFurnitureTotal();
+                    if (this.checked && (parseInt(qty.value || '0', 10) || 0) === 0) qty.value = '1';
+                    if (!this.checked) qty.value = '0';
+                    updateFurnitureTotal();
+                });
+            });
+            document.querySelectorAll('.furniture-qty').forEach(input => {
+                input.addEventListener('input', function() {
+                    // clamp to min/max (when max exists)
+                    const min = 0;
+                    const maxAttr = this.getAttribute('max');
+                    const max = maxAttr ? parseInt(maxAttr, 10) : null;
+                    let v = parseInt(this.value || '0', 10);
+                    if (isNaN(v)) v = 0;
+                    if (v < min) v = min;
+                    if (max !== null && v > max) v = max;
+                    this.value = String(v);
+                    updateFurnitureTotal();
+                });
+            });
+            updateFurnitureTotal();
+        });
+    </script>
+{% endblock %}
+

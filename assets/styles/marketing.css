@@ -1,0 +1,424 @@
+/* Marketing site — real estate theme (aligned with client portal & admin) */
+
+.marketing-site {
+    --mk-navy: #0f1c2e;
+    --mk-navy-mid: #1a2d45;
+    --mk-gold: #c9a227;
+    --mk-gold-soft: rgba(201, 162, 39, 0.18);
+    --mk-cream: #f7f5f0;
+    --mk-sand: #ebe6dc;
+    --mk-accent: #4f46e5;
+    --mk-text: #1f2937;
+    --mk-muted: #6b7280;
+    --mk-radius: 14px;
+    --mk-shadow: 0 4px 24px rgba(15, 28, 46, 0.08);
+
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: var(--mk-text);
+    background: var(--mk-cream);
+    min-height: 100vh;
+}
+
+/* Header */
+.marketing-site .header {
+    background: #fff;
+    border-bottom: 1px solid var(--mk-sand);
+    box-shadow: 0 2px 16px rgba(15, 28, 46, 0.04);
+    padding: 0.85rem 0;
+}
+
+.marketing-site .logo {
+    color: var(--mk-navy);
+}
+
+.marketing-site .logo-text {
+    color: var(--mk-navy);
+    font-size: 0.95rem;
+}
+
+.marketing-site .nav-link {
+    color: var(--mk-muted);
+}
+
+.marketing-site .nav-link:hover {
+    color: var(--mk-navy);
+}
+
+.marketing-site .nav-link--active {
+    color: var(--mk-navy);
+    border-bottom-color: var(--mk-gold);
+}
+
+.marketing-site .btn-login {
+    color: var(--mk-navy);
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.marketing-site .btn-login:hover {
+    background: var(--mk-cream);
+}
+
+.marketing-site .btn-signup {
+    background: linear-gradient(135deg, var(--mk-navy), var(--mk-navy-mid));
+    color: #fff;
+    border-radius: 10px;
+    font-weight: 600;
+    border: 1px solid rgba(201, 162, 39, 0.35);
+}
+
+.marketing-site .btn-signup:hover {
+    box-shadow: 0 6px 20px rgba(15, 28, 46, 0.25);
+    transform: translateY(-2px);
+}
+
+/* Hero */
+.marketing-site .hero--real-estate {
+    background-image:
+        linear-gradient(115deg, rgba(15, 28, 46, 0.9) 0%, rgba(79, 70, 229, 0.72) 55%, rgba(15, 28, 46, 0.92) 100%),
+        url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=80&auto=format&fit=crop');
+    padding: 5rem 1.5rem 5.5rem;
+}
+
+.marketing-site .hero-kicker {
+    color: var(--mk-gold);
+    opacity: 1;
+}
+
+.marketing-site .hero-highlight::after {
+    background: rgba(201, 162, 39, 0.35);
+}
+
+.marketing-site .hero-search {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid var(--mk-sand);
+    box-shadow: var(--mk-shadow);
+}
+
+.marketing-site .hero-search-btn {
+    background: var(--mk-gold);
+    color: var(--mk-navy);
+    font-weight: 700;
+}
+
+.marketing-site .hero-search-btn:hover {
+    background: #dbb84a;
+}
+
+.marketing-site .btn-hero-primary {
+    color: var(--mk-navy);
+    font-weight: 700;
+}
+
+.marketing-site .btn-hero-secondary {
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Stats */
+.marketing-site .stats {
+    background: var(--mk-navy);
+    padding: 3.5rem 1.5rem;
+}
+
+.marketing-site .stat-item h3 {
+    color: var(--mk-gold);
+}
+
+.marketing-site .stat-item p {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Section headers */
+.marketing-site .section-header h2,
+.marketing-site .property-focus-title,
+.marketing-site #how-heading {
+    color: var(--mk-navy);
+    font-weight: 600;
+}
+
+.marketing-site .section-header p,
+.marketing-site .property-focus-sub {
+    color: var(--mk-muted);
+}
+
+/* Property type cards */
+.marketing-site .property-focus {
+    background: #fff;
+    border-bottom: 1px solid var(--mk-sand);
+}
+
+.marketing-site .property-focus-card {
+    border-color: var(--mk-sand);
+    border-radius: var(--mk-radius);
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.marketing-site .property-focus-card:hover {
+    border-color: var(--mk-gold);
+    transform: translateY(-4px);
+    box-shadow: var(--mk-shadow);
+}
+
+.marketing-site .property-focus-label {
+    color: var(--mk-navy);
+}
+
+/* Featured / listings */
+.marketing-site .featured {
+    background: var(--mk-cream);
+}
+
+.marketing-site .featured--furniture {
+    background: #fff;
+}
+
+.marketing-site .property-card {
+    border: 1px solid var(--mk-sand);
+    border-radius: var(--mk-radius);
+    box-shadow: var(--mk-shadow);
+}
+
+.marketing-site .property-card:hover {
+    box-shadow: 0 16px 40px rgba(15, 28, 46, 0.12);
+}
+
+.marketing-site .featured-badge {
+    background: var(--mk-navy);
+}
+
+.marketing-site .listing-type-badge {
+    background: var(--mk-gold);
+    color: var(--mk-navy);
+}
+
+.marketing-site .property-price {
+    color: #b45309;
+}
+
+.marketing-site .btn-view {
+    background: linear-gradient(135deg, var(--mk-navy), var(--mk-navy-mid));
+    border: 1px solid rgba(201, 162, 39, 0.3);
+    border-radius: 10px;
+}
+
+.marketing-site .btn-view:hover {
+    box-shadow: 0 6px 16px rgba(15, 28, 46, 0.25);
+}
+
+.marketing-site .btn-outline {
+    color: var(--mk-navy);
+    border-color: var(--mk-navy);
+    border-radius: 10px;
+}
+
+.marketing-site .btn-outline:hover {
+    background: var(--mk-navy);
+    color: #fff;
+}
+
+/* How it works */
+.marketing-site .how-it-works {
+    background: #fff;
+    border-top: 1px solid var(--mk-sand);
+}
+
+.marketing-site .how-step-num {
+    background: var(--mk-gold-soft);
+    color: var(--mk-navy);
+    border: 2px solid var(--mk-gold);
+}
+
+.marketing-site .how-step h3 {
+    color: var(--mk-navy);
+}
+
+/* Services */
+.marketing-site .services {
+    background: var(--mk-cream);
+}
+
+.marketing-site .service-card {
+    border: 1px solid var(--mk-sand);
+    border-radius: var(--mk-radius);
+    box-shadow: var(--mk-shadow);
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.marketing-site .service-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--mk-gold);
+}
+
+.marketing-site .service-card h3 {
+    color: var(--mk-navy);
+}
+
+/* CTA */
+.marketing-site .cta {
+    background:
+        linear-gradient(115deg, var(--mk-navy) 0%, var(--mk-navy-mid) 50%, #2d1f4e 100%);
+    padding: 4rem 1.5rem;
+}
+
+.marketing-site .btn-white {
+    background: var(--mk-gold);
+    color: var(--mk-navy);
+    font-weight: 700;
+    border-radius: 10px;
+}
+
+.marketing-site .btn-white:hover {
+    background: #dbb84a;
+}
+
+.marketing-site .btn-white-outline {
+    border-radius: 10px;
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Footer */
+.marketing-site .footer {
+    background: var(--mk-navy);
+    color: rgba(255, 255, 255, 0.88);
+    padding: 3rem 1.5rem 1.5rem;
+}
+
+.marketing-site .footer-section h3,
+.marketing-site .footer-heading-link {
+    color: var(--mk-gold);
+}
+
+.marketing-site .footer-section p,
+.marketing-site .footer-section a {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.marketing-site .footer-section a:hover {
+    color: var(--mk-gold);
+}
+
+.marketing-site .footer-bottom {
+    border-top-color: rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.65);
+}
+
+/* About / Contact pages */
+.marketing-site .simple-page {
+    background: var(--mk-cream);
+}
+
+.marketing-site .simple-page-hero {
+    background:
+        linear-gradient(115deg, rgba(15, 28, 46, 0.94) 0%, rgba(79, 70, 229, 0.7) 100%),
+        url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&q=80&auto=format&fit=crop') center/cover no-repeat;
+    padding: 4rem 1.5rem;
+    color: #fff;
+}
+
+.marketing-site .simple-page-hero h1 {
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.marketing-site .simple-page-hero p {
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 36rem;
+    margin: 0 auto;
+}
+
+.marketing-site .simple-page-hero .hero-kicker {
+    color: var(--mk-gold);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 1;
+}
+
+.marketing-site .simple-page-content {
+    max-width: 1100px;
+}
+
+.marketing-site .simple-page-card {
+    border: 1px solid var(--mk-sand);
+    border-radius: var(--mk-radius);
+    box-shadow: var(--mk-shadow);
+    background: #fff;
+}
+
+.marketing-site .simple-page-card--featured {
+    background: linear-gradient(145deg, #fff 0%, var(--mk-cream) 100%);
+    border-left: 4px solid var(--mk-gold);
+}
+
+.marketing-site .simple-page-kicker {
+    color: var(--mk-gold);
+}
+
+.marketing-site .simple-page-badge {
+    background: var(--mk-gold-soft);
+    color: #92400e;
+    border: 1px solid rgba(201, 162, 39, 0.35);
+}
+
+.marketing-site .simple-page-card-icon {
+    background: var(--mk-gold-soft);
+    color: var(--mk-navy);
+}
+
+.marketing-site .simple-page-section-header h2 {
+    color: var(--mk-navy);
+}
+
+.marketing-site .simple-page-team-card {
+    border: 1px solid var(--mk-sand);
+    border-radius: var(--mk-radius);
+    background: #fff;
+    box-shadow: var(--mk-shadow);
+}
+
+.marketing-site .simple-page-team-card--lead {
+    border-color: var(--mk-gold);
+    background: linear-gradient(180deg, #fff 0%, var(--mk-cream) 100%);
+}
+
+.marketing-site .simple-page-team-avatar {
+    border: 3px solid var(--mk-gold);
+    background: var(--mk-navy);
+}
+
+.marketing-site .simple-page-team-role {
+    color: #b45309;
+    font-weight: 600;
+}
+
+.marketing-site .contact-details-list li {
+    border-bottom-color: var(--mk-sand);
+}
+
+.marketing-site .contact-form-embed iframe {
+    border: 1px solid var(--mk-sand);
+    border-radius: var(--mk-radius);
+}
+
+@media (max-width: 900px) {
+    .marketing-site .nav-main {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .marketing-site .hero h1 {
+        font-size: 2rem;
+    }
+
+    .marketing-site .hero-search {
+        flex-direction: column;
+        border-radius: var(--mk-radius);
+    }
+
+    .marketing-site .hero-search input[type="search"] {
+        width: 100%;
+    }
+}

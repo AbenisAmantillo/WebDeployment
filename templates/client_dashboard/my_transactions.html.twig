@@ -1,0 +1,78 @@
+{% extends 'client_dashboard/layout.html.twig' %}
+
+{% block title %}My Transaction{% endblock %}
+
+{% block portal_hero %}
+<section class="portal-hero portal-hero--compact">
+    <div class="portal-hero-inner">
+        <a href="{{ path('app_client_dashboard') }}" class="portal-btn-back" style="margin-bottom:1rem;color:#fff;border-color:rgba(255,255,255,0.35);background:rgba(255,255,255,0.1);">← Back to listings</a>
+        <p class="portal-hero-kicker">Your purchase</p>
+        <h1>My transaction</h1>
+        <p class="portal-hero-lead">Property details, payment status, and installment progress</p>
+    </div>
+</section>
+{% endblock %}
+
+{% block portal_content %}
+    <div class="portal-panel">
+        <div class="transaction-header" style="margin-bottom:1rem;">
+            <h3 class="section-title-modern">Transaction history</h3>
+        </div>
+        <p class="admin-table-hint" style="text-align:right;margin-bottom:0.75rem;">Scroll horizontally to see all columns →</p>
+        <div class="transaction-table-wrapper">
+            <table class="transaction-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Property</th>
+                        <th>Type</th>
+                        <th>Furniture</th>
+                        <th>Total</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions %}
+                    <tr>
+                        <td>#{{ transaction.id }}</td>
+                        <td>{{ transaction.propertyName }}</td>
+                        <td>{{ transaction.purchaseType|capitalize }}</td>
+                        <td>
+                            {% if transaction.transactionFurniture|length > 0 %}
+                                {% for tf in transaction.transactionFurniture %}
+                                    {{ tf.furniture.name }} (×{{ tf.quantity }}){% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <span style="color:var(--cp-muted);">None</span>
+                            {% endif %}
+                        </td>
+                        <td><strong style="color:#b45309;">₱{{ transaction.price|number_format(2, '.', ',') }}</strong></td>
+                        <td>{{ transaction.date|date('M d, Y') }}</td>
+                        <td>
+                            {% set payment_status = transaction.clientPaymentStatus %}
+                            {% if payment_status == 'fully_paid' %}
+                                <span class="status-paid">Fully paid</span>
+                            {% elseif payment_status == 'awaiting_staff' %}
+                                <span class="status-pending">Awaiting confirmation</span>
+                            {% elseif payment_status == 'installments_active' %}
+                                <span class="status-progress">Installments active</span>
+                            {% elseif transaction.payments|length > 0 %}
+                                <span class="status-pending">In progress</span>
+                            {% else %}
+                                <a href="{{ path('app_client_transaction_process_payment', {'id': transaction.id}) }}" class="portal-btn portal-btn--gold" style="padding:0.5rem 1rem;font-size:0.8rem;">Complete payment</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" style="text-align:center;padding:2rem;color:var(--cp-muted);">
+                            No transactions yet. <a href="{{ path('app_client_dashboard') }}">Browse properties</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

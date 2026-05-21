@@ -1,0 +1,112 @@
+{% extends 'layouts/marketing_layout.html.twig' %}
+
+{% block title %}About Us | The Amantillo Property Co.{% endblock %}
+
+{% set marketing_nav = 'about' %}
+
+{% block marketing_body %}
+    <main class="simple-page">
+        <section class="simple-page-hero">
+            <div class="simple-page-hero-inner">
+                <p class="hero-kicker" style="margin-bottom:0.65rem;">Who we are</p>
+                <h1>About The Amantillo Property Co.</h1>
+                <p>We help you find a place you'll love — with listings you can trust and people who have your back.</p>
+            </div>
+        </section>
+
+        <section class="simple-page-content">
+            <div class="simple-page-section">
+                <div class="simple-page-card simple-page-card--featured">
+                    <div class="simple-page-kicker">Our story</div>
+                    <h2>Real estate made clearer, faster, and more human.</h2>
+                    <p>From first-time buyers to seasoned investors, we connect clients to the right properties and the right support. Our platform brings together listings, furnishings, and local guidance in one experience.</p>
+                    <div class="simple-page-badges">
+                        <span class="simple-page-badge">Properties</span>
+                        <span class="simple-page-badge">Furnishings</span>
+                        <span class="simple-page-badge">Local expertise</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="simple-page-section">
+                <div class="simple-page-section-header">
+                    <h2>Vision &amp; mission</h2>
+                    <p>What guides our decisions and how we serve you.</p>
+                </div>
+
+                <div class="simple-page-grid simple-page-grid--two">
+                    <div class="simple-page-card">
+                        <div class="simple-page-card-icon">✨</div>
+                        <h3>Our vision</h3>
+                        <p>To be the most trusted property partner in Negros Oriental — making it simple for every family and investor to find a place where they can grow and thrive.</p>
+                    </div>
+                    <div class="simple-page-card">
+                        <div class="simple-page-card-icon">🎯</div>
+                        <h3>Our mission</h3>
+                        <p>We connect people to the right homes, rentals, and furnishings through verified listings, transparent guidance, and dependable support from discovery to move-in.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="simple-page-section">
+                <div class="simple-page-section-header">
+                    <h2>Meet the team</h2>
+                    <p>The people guiding strategy, service, and support for every client.</p>
+                </div>
+
+                <div class="simple-page-team-grid">
+                    {% set team = [
+                        { name: 'Abenis Amantillo', role: 'Chief Executive Officer', bio: 'Sets the vision for how we blend technology with trusted, human guidance — and keeps the client experience at the center of every decision.', image: 'two.png', lead: true },
+                        { name: 'Zerah Segismar', role: 'Chief Operating Officer', bio: 'Oversees day-to-day operations so listings, partners, and support stay coordinated from search to move-in.', image: 'Erai.JPG' },
+                        { name: 'Keiane De Chaves', role: 'Chief Financial Officer', bio: 'Ensures financial clarity and sustainable growth so clients and partners can transact with confidence.', image: 'one.png' },
+                        { name: 'Charlie Bajamonde', role: 'Managing Director', bio: 'Brings neighborhood insight and market context so you can shortlist properties that fit your lifestyle and goals.', image: 'three.png' },
+                        { name: 'Dorothy Torres', role: 'General Manager', bio: 'Leads cross-functional teams to deliver consistent service quality across listings, sales, and client care.', image: 'four.avif' },
+                        { name: 'Kyun Calumpang', role: 'Operations Manager', bio: 'Coordinates listings, partners, and support workflows so every client journey stays smooth.', image: 'five.jpg' },
+                        { name: 'Ella Catacutan', role: 'Sales Director', bio: 'Works with buyers, sellers, and renters to answer questions and keep communication clear.', image: 'six.webp' },
+                        { name: 'Justine Padora', role: 'Marketing Director', bio: 'Shapes how we reach the right audience with campaigns rooted in trust and local expertise.', image: 'seven.png' },
+                    ] %}
+                    {% for member in team %}
+                    <article class="simple-page-team-card{{ member.lead|default(false) ? ' simple-page-team-card--lead' : '' }}">
+                        <div class="simple-page-team-avatar">
+                            <img src="{{ asset('images/team/' ~ member.image) }}" alt="Photo of {{ member.name }}" loading="lazy" width="96" height="96">
+                        </div>
+                        <h3 class="simple-page-team-name">{{ member.name }}</h3>
+                        <p class="simple-page-team-role">{{ member.role }}</p>
+                        <p class="simple-page-team-bio">{{ member.bio }}</p>
+                    </article>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="simple-page-section">
+                <div class="simple-page-section-header">
+                    <h2>What you can expect</h2>
+                    <p>Simple steps, better choices, and support you can feel.</p>
+                </div>
+
+                <div class="simple-page-grid">
+                    <div class="simple-page-card">
+                        <div class="simple-page-card-icon">✅</div>
+                        <h3>Verified listings</h3>
+                        <p>Clear details, fair pricing, and up-to-date availability so you can move faster with confidence.</p>
+                    </div>
+                    <div class="simple-page-card">
+                        <div class="simple-page-card-icon">🧭</div>
+                        <h3>Local expertise</h3>
+                        <p>Our team understands neighborhoods, market trends, and what matters most to your lifestyle.</p>
+                    </div>
+                    <div class="simple-page-card">
+                        <div class="simple-page-card-icon">🤝</div>
+                        <h3>End-to-end support</h3>
+                        <p>Shortlist, schedule, transact — we're here to make the journey simple and stress-free.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="simple-page-cta">
+                <a href="{{ path('landing_page') }}" class="btn btn-outline">Back to home</a>
+                <a href="{{ path('app_contact') }}" class="btn btn-signup">Contact us</a>
+            </div>
+        </section>
+    </main>
+{% endblock %}

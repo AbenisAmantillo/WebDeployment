@@ -1,0 +1,106 @@
+{% extends 'layouts/admin_layout.html.twig' %}
+
+{% block title %}{{ company_name }} - Dashboard{% endblock %}
+
+{% block content %}
+        <section class="dashboard-welcome" aria-label="Dashboard welcome">
+            <div class="dashboard-welcome-inner">
+                <p class="dashboard-welcome-kicker">Portfolio overview</p>
+                <h1>{{ company_name }}</h1>
+                <p>{{ tagline }} — Track listings, sales, and revenue across your property portfolio.</p>
+            </div>
+        </section>
+
+        <div class="dashboard-tabs">
+            <button class="tab-button active" data-tab="overview">Portfolio snapshot</button>
+        </div>
+
+        <div id="overview-tab" class="tab-content active">
+            <div class="metrics-section">
+                <h2 class="metrics-section-title">Property listings</h2>
+                <div class="metrics-row">
+                    <div class="metric-card-modern metric-card-modern--properties">
+                        <div class="metric-header">
+                            <div>
+                                <div class="metric-label-modern">Active listings</div>
+                                <div class="metric-value-modern">{{ metrics.total_properties }}</div>
+                            </div>
+                            <div class="metric-icon-modern" aria-hidden="true">▣</div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card-modern metric-card-modern--pending">
+                        <div class="metric-header">
+                            <div>
+                                <div class="metric-label-modern">Pending approval</div>
+                                <div class="metric-value-modern">{{ metrics.properties_pending }}</div>
+                            </div>
+                            <div class="metric-icon-modern" aria-hidden="true">◷</div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card-modern metric-card-modern--sold">
+                        <div class="metric-header">
+                            <div>
+                                <div class="metric-label-modern">Properties sold</div>
+                                <div class="metric-value-modern">{{ metrics.properties_sold }}</div>
+                            </div>
+                            <div class="metric-icon-modern" aria-hidden="true">✓</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metrics-section">
+                <h2 class="metrics-section-title">Furnishings &amp; revenue</h2>
+                <div class="metrics-row">
+                    <div class="metric-card-modern metric-card-modern--furniture">
+                        <div class="metric-header">
+                            <div>
+                                <div class="metric-label-modern">Furniture in catalog</div>
+                                <div class="metric-value-modern">{{ metrics.total_furnitures }}</div>
+                            </div>
+                            <div class="metric-icon-modern" aria-hidden="true">◫</div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card-modern metric-card-modern--furniture">
+                        <div class="metric-header">
+                            <div>
+                                <div class="metric-label-modern">Furniture sold</div>
+                                <div class="metric-value-modern">{{ metrics.furnitures_sold }}</div>
+                            </div>
+                            <div class="metric-icon-modern" aria-hidden="true">◫</div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card-modern metric-card-modern--revenue">
+                        <div class="metric-header">
+                            <div>
+                                <div class="metric-label-modern">Total revenue</div>
+                                <div class="metric-value-modern">{{ metrics.total_revenue }}</div>
+                            </div>
+                            <div class="metric-icon-modern" aria-hidden="true">₱</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const tabButtons = document.querySelectorAll('.tab-button');
+                const tabContents = document.querySelectorAll('.tab-content');
+
+                tabButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const targetTab = this.getAttribute('data-tab');
+                        tabButtons.forEach(btn => btn.classList.remove('active'));
+                        tabContents.forEach(content => content.classList.remove('active'));
+                        this.classList.add('active');
+                        document.getElementById(targetTab + '-tab').classList.add('active');
+                    });
+                });
+            });
+        </script>
+{% endblock %}

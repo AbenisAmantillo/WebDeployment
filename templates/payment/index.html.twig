@@ -1,0 +1,61 @@
+{% extends 'layouts/admin_layout.html.twig' %}
+
+{% block title %}Payment Management{% endblock %}
+
+{% block content %}
+<div class="admin-page property-container">
+    {% include 'partials/admin_page_header.html.twig' with {
+        kicker: 'Operations',
+        title: 'Payments',
+        description: 'Submitted installment confirmations and completed payment records'
+    } only %}
+
+    <p class="admin-table-hint">Scroll horizontally if columns are cut off →</p>
+    <div class="table-wrapper">
+        <table class="property-table property-table--wide">
+            <thead>
+                <tr>
+                    <th class="col-id">Payment ID</th>
+                    <th class="col-title">Customer</th>
+                    <th class="col-id">Transaction</th>
+                    <th class="col-price">Amount</th>
+                    <th class="col-title">Method</th>
+                    <th class="col-id">Status</th>
+                    <th class="col-price">Date</th>
+                    <th class="col-actions">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in payments %}
+                    <tr>
+                        <td class="col-id">#{{ payment.id }}</td>
+                        <td class="col-title">{{ payment.customer ? payment.customer.username : 'N/A' }}</td>
+                        <td class="col-id">{% if payment.transaction %}#{{ payment.transaction.id }}{% else %}N/A{% endif %}</td>
+                        <td class="col-price"><span class="admin-price">₱{{ payment.amount|number_format(2, '.', ',') }}</span></td>
+                        <td class="col-title">{{ payment.paymentMethod }}</td>
+                        <td class="col-id">
+                            <span class="status-badge status-{{ payment.status|lower|replace({' ': '-'}) }}">{{ payment.status }}</span>
+                        </td>
+                        <td class="col-price">{{ payment.date ? payment.date|date('Y-m-d H:i') : 'N/A' }}</td>
+                        <td class="col-actions">
+                            <div class="actions">
+                                <a href="{{ path('app_payment_show', {id: payment.id}) }}" class="btn btn-secondary btn-sm">View</a>
+                                {% if payment.status|lower == 'submitted' %}
+                                    <form method="post" action="{{ path('app_payment_confirm_submitted', {id: payment.id}) }}" style="display:inline-block;">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('confirm_submitted_payment_' ~ payment.id) }}">
+                                        <button type="submit" class="btn btn-primary btn-sm">Confirm</button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="8" class="admin-table-empty">No submitted or completed payment records available.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

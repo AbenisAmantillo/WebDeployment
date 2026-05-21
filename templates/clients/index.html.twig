@@ -1,0 +1,126 @@
+{% extends 'layouts/admin_layout.html.twig' %}
+
+{% block title %}Client Management{% endblock %}
+
+{% block content %}
+<div class="admin-page clients-container">
+    <div class="clients-header transaction-header-section">
+        <div class="header-left">
+            <p class="admin-page-kicker">Administration</p>
+            <h1>
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                Clients &amp; staff
+            </h1>
+            <p>Registered buyers, sellers, and internal team accounts</p>
+        </div>
+        <div class="header-right">
+            <div class="stats-card">
+                <div class="stat-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-label">Total users</div>
+                    <div class="stat-value">{{ total_clients }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-toolbar toolbar">
+        <div class="search-box">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <input type="text" id="searchInput" placeholder="Search by username or email...">
+        </div>
+    </div>
+
+    <div class="clients-grid" id="clientsGrid">
+        {% for client in clients %}
+            <div class="client-card" data-name="{{ (client.username ~ ' ' ~ client.email)|lower }}">
+                <div class="client-avatar">
+                    {% include 'partials/user_avatar.html.twig' with { user: client, size: 'md' } %}
+                    <div class="client-avatar-text">
+                        <div class="client-badge">{{ client.username }}</div>
+                        {% if client.email %}
+                            <div class="client-email">{{ client.email }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="client-info">
+                    <h3 class="client-name">{% if 'ROLE_STAFF' in client.roles %}Staff{% elseif 'ROLE_USER' in client.roles %}Client{% else %}User{% endif %}</h3>
+                    <div class="client-meta">
+                        <span class="meta-item">ID #{{ client.id }}</span>
+                        <span class="meta-item status-badge status-{{ client.status == 'active' ? 'active' : 'inactive' }}">{{ client.status|capitalize }}</span>
+                    </div>
+                </div>
+
+                <div class="client-actions">
+                    <a href="{{ path('app_notification_new', {'client': client.id}) }}" class="action-btn edit">Notify</a>
+                    <a href="{{ path('app_client_edit', {'id': client.id}) }}" class="action-btn edit">Edit</a>
+                    <form method="post" action="{{ path('app_client_delete', {'id': client.id}) }}"
+                        onsubmit="return confirm('Delete {{ client.username }}?');" style="display:inline;flex:1;">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ client.id) }}">
+                        <button type="submit" class="action-btn delete" style="width:100%;">Delete</button>
+                    </form>
+                </div>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <h3>No users found</h3>
+                <p>No registered clients or staff yet.</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div id="noResults" class="empty-state" style="display: none;">
+        <h3>No results</h3>
+        <p>Try a different search term.</p>
+    </div>
+
+    <div class="admin-page-footer" style="justify-content: center;">
+        <a href="{{ path('app_client_new') }}" class="btn btn-primary">Create user / staff</a>
+    </div>
+</div>
+
+<script>
+    const searchInput = document.getElementById('searchInput');
+    const clientsGrid = document.getElementById('clientsGrid');
+    const noResults = document.getElementById('noResults');
+
+    if (searchInput && clientsGrid) {
+        searchInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const clientCards = document.querySelectorAll('.client-card');
+            let visibleCount = 0;
+
+            clientCards.forEach(card => {
+                if (card.dataset.name.includes(searchTerm)) {
+                    card.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            if (visibleCount === 0 && clientCards.length > 0) {
+                clientsGrid.style.display = 'none';
+                noResults.style.display = 'flex';
+            } else {
+                clientsGrid.style.display = 'grid';
+                noResults.style.display = 'none';
+            }
+        });
+    }
+</script>
+{% endblock %}

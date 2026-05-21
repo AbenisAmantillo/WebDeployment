@@ -1,0 +1,30 @@
+{{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+    {{ form_row(form.title) }}
+    {{ form_row(form.address) }}
+    {{ form_row(form.price) }}
+    <div class="form-group">
+        {{ form_label(form.status) }}
+        {{ form_widget(form.status) }}
+        {{ form_errors(form.status) }}
+        {% if form.status.vars.disabled %}
+            <small class="form-text text-muted" style="color: #dc2626;">
+                ⚠ Status cannot be changed because this property has transactions.
+            </small>
+        {% endif %}
+    </div>
+    {{ form_row(form.imageFile) }}
+    
+    {% if form.vars.data.imageFileName is defined and form.vars.data.imageFileName %}
+        <div class="current-image">
+            <p>Current Image:</p>
+            <img src="{{ asset('uploads/property_images/' ~ form.vars.data.imageFileName) }}" alt="Current property image" style="max-width: 300px; border-radius: 8px;">
+        </div>
+    {% endif %}
+    
+    <button type="submit" class="btn btn-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        {{ button_label|default('Save') }}
+    </button>
+{{ form_end(form) }}

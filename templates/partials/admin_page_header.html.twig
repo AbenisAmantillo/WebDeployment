@@ -1,0 +1,17 @@
+{# kicker, title, description (optional), actions_html (optional) #}
+<section class="admin-page-header">
+    <div class="admin-page-header-inner">
+        {% if kicker is defined and kicker %}
+            <p class="admin-page-kicker">{{ kicker }}</p>
+        {% endif %}
+        <h1>{{ title }}</h1>
+        {% if description is defined and description %}
+            <p>{{ description }}</p>
+        {% endif %}
+    </div>
+    {% if actions_html is defined and actions_html %}
+        <div class="admin-page-header-actions">
+            {{ actions_html|raw }}
+        </div>
+    {% endif %}
+</section>

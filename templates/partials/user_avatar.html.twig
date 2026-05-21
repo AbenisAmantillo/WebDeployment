@@ -1,0 +1,13 @@
+{# user: App\Entity\User, size: optional sm|md|lg (default md) #}
+{% set sizeClass = size|default('md') %}
+<div class="avatar-circle avatar-circle--{{ sizeClass }}{% if not user.profileImageFileName %} avatar-circle--placeholder{% endif %}">
+    {% if user.profileImageFileName %}
+        <img
+            src="{{ asset('uploads/profile_images/' ~ user.profileImageFileName) }}"
+            alt="{{ user.username }} profile photo"
+            loading="lazy"
+        >
+    {% else %}
+        <span class="avatar-initials" aria-hidden="true">{{ user.username|slice(0, 1)|upper }}</span>
+    {% endif %}
+</div>

@@ -1,0 +1,42 @@
+# https://render.com/docs/blueprint-spec
+# Deploy: connect repo and use "New Blueprint" or set Web Service to Docker with this Dockerfile (final stage: web).
+
+databases:
+  - name: amantillo-mysql
+    plan: free
+    databaseName: amantillo_db
+    user: amantillo_user
+
+services:
+  - type: web
+    name: amantillo-property-co
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /
+    envVars:
+      - key: APP_ENV
+        value: prod
+      - key: APP_DEBUG
+        value: "0"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: amantillo-mysql
+          property: connectionString
+      - key: APP_SECRET
+        generateValue: true
+      - key: JWT_PASSPHRASE
+        generateValue: true
+      - key: DEFAULT_URI
+        sync: false
+      - key: MAILER_DSN
+        sync: false
+      - key: MAILER_FROM_ADDRESS
+        sync: false
+      - key: MAILER_FROM_NAME
+        value: The Amantillo Property Co.
+      - key: OAUTH_GOOGLE_CLIENT_ID
+        sync: false
+      - key: OAUTH_GOOGLE_CLIENT_SECRET
+        sync: false

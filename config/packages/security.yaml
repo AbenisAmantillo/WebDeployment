@@ -1,0 +1,86 @@
+security:
+    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+
+    # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
+    providers:
+        # used to reload user from session & other features (e.g. switch_user)
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: username
+
+    firewalls:
+        dev:
+            # Ensure dev tools and static assets are always allowed
+            pattern: ^/(_profiler|_wdt|assets|build)/
+            security: false
+        api_platform:
+            pattern: ^/api
+            stateless: true
+            provider: app_user_provider
+            user_checker: App\Security\AppUserChecker
+            json_login:
+                check_path: /api/login
+                username_path: username
+                password_path: password
+                success_handler: App\Security\JWTAuthenticationSuccessHandler
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+            jwt: ~
+        main:
+            lazy: true
+            provider: app_user_provider
+            user_checker: App\Security\AppUserChecker
+            custom_authenticators: 
+            - App\Security\LogInAuthenticator
+            - App\Security\GoogleAuthenticator
+            logout:
+                path: app_logout
+                # where to redirect after logout
+                target: app_login
+
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 604800
+                path: /
+                # by default, the feature is enabled by checking a checkbox in the
+                # login form, uncomment the following line to always enable it.
+                #always_remember_me: true
+
+            # Activate different ways to authenticate:
+            # https://symfony.com/doc/current/security.html#the-firewall
+
+            # https://symfony.com/doc/current/security/impersonating_user.html
+            # switch_user: true
+
+    # Note: Only the *first* matching rule is applied
+    access_control:
+        - { path: ^/activity-logs, roles: ROLE_ADMIN }
+        - { path: ^/notifications, roles: ROLE_ADMIN }
+        - { path: ^/account, roles: [ROLE_ADMIN, ROLE_STAFF] }
+        - { path: ^/dashboard, roles: [ROLE_ADMIN, ROLE_STAFF] }
+        - { path: ^/transaction, roles: [ROLE_ADMIN, ROLE_STAFF] }
+        - { path: ^/client_dashboard, roles: ROLE_USER }
+        - { path: ^/client, roles: ROLE_USER }
+        - { path: ^/property, roles: [ROLE_ADMIN, ROLE_STAFF]}
+        - { path: ^/furniture, roles: [ROLE_ADMIN, ROLE_STAFF]}
+        - { path: ^/payment, roles: [ROLE_ADMIN, ROLE_STAFF] }
+        - { path: ^/api/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/auth/firebase, roles: PUBLIC_ACCESS }
+        - { path: ^/api/register, roles: PUBLIC_ACCESS }
+        - { path: ^/api/verify-email, roles: PUBLIC_ACCESS }
+        - { path: ^/api, roles: IS_AUTHENTICATED }
+        - { path: ^/connect/google, roles: PUBLIC_ACCESS }
+        - { path: ^/verify-email, roles: PUBLIC_ACCESS }
+
+when@test:
+    security:
+        password_hashers:
+            # Password hashers are resource-intensive by design to ensure security.
+            # In tests, it's safe to reduce their cost to improve performance.
+            Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+                algorithm: auto
+                cost: 4 # Lowest possible value for bcrypt
+                time_cost: 3 # Lowest possible value for argon
+                memory_cost: 10 # Lowest possible value for argon

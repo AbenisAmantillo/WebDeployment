@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('styles/client_portal.css') }}">
+    {% block portal_styles %}{% endblock %}
+{% endblock %}
+
+{% block body %}
+<div class="client-portal">
+    {% include 'client_dashboard/_portal_header.html.twig' %}
+
+    {% block portal_hero %}
+    <section class="portal-hero portal-hero--compact">
+        <div class="portal-hero-inner">
+            {% block portal_hero_inner %}{% endblock %}
+        </div>
+    </section>
+    {% endblock %}
+
+    <main class="portal-main {% block portal_main_class %}{% endblock %}">
+        {% block portal_content %}{% endblock %}
+    </main>
+
+    {% include 'client_dashboard/_portal_footer.html.twig' %}
+    {% include 'client_dashboard/_portal_scripts.html.twig' %}
+    {% block portal_scripts %}{% endblock %}
+</div>
+{% endblock %}

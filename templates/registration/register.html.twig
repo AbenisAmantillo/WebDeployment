@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1920') center/cover no-repeat;
+            filter: brightness(0.7);
+            z-index: 0;
+        }
+
+        .card {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 400px;
+            margin: 20px;
+            padding: 48px 40px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 24px;
+            animation: fadeUp 0.5s ease-out both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 28px;
+            font-weight: 500;
+            text-align: center;
+            margin-bottom: 36px;
+            letter-spacing: -0.3px;
+        }
+
+        .alert,
+        .form-error-message {
+            padding: 10px 14px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            color: #fff;
+            background: rgba(220, 53, 69, 0.75);
+        }
+
+        .field {
+            margin-bottom: 16px;
+            animation: fadeUp 0.5s ease-out both;
+        }
+
+        .field:nth-child(2) { animation-delay: 0.08s; }
+        .field:nth-child(3) { animation-delay: 0.12s; }
+        .field:nth-child(4) { animation-delay: 0.16s; }
+
+        .field label,
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 400;
+            color: rgba(255,255,255,0.65);
+            margin-bottom: 6px;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap input,
+        .input-wrap input[type="text"],
+        .input-wrap input[type="password"],
+        .input-wrap input[type="email"] {
+            width: 100%;
+            padding: 13px 42px 13px 16px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 50px;
+            font-family: inherit;
+            font-size: 14px;
+            color: #fff;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .input-wrap input::placeholder { color: rgba(255,255,255,0.35); }
+
+        .input-wrap input:focus {
+            background: rgba(255, 255, 255, 0.18);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .input-wrap .ico {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255,255,255,0.45);
+            display: flex;
+        }
+
+        /* Symfony inline field errors */
+        .field ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 6px;
+        }
+
+        .field ul li,
+        .form-error-message {
+            background: rgba(220, 53, 69, 0.75);
+            color: #fff;
+            font-size: 12px;
+            padding: 6px 14px;
+            border-radius: 50px;
+            margin-bottom: 4px;
+        }
+
+        /* Agree terms checkbox row */
+        .terms-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin: 20px 0 24px;
+            animation: fadeUp 0.5s ease-out 0.2s both;
+        }
+
+        .terms-row input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            margin-top: 2px;
+            accent-color: #fff;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .terms-row label {
+            color: rgba(255,255,255,0.7);
+            font-size: 13px;
+            text-transform: none;
+            letter-spacing: 0;
+            margin: 0;
+            cursor: pointer;
+            line-height: 1.4;
+        }
+
+        .terms-errors ul {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 12px;
+        }
+
+        .terms-errors ul li {
+            background: rgba(220, 53, 69, 0.75);
+            color: #fff;
+            font-size: 12px;
+            padding: 6px 14px;
+            border-radius: 50px;
+            margin-bottom: 4px;
+        }
+
+        .btn-register {
+            width: 100%;
+            padding: 14px;
+            background: #fff;
+            color: #222;
+            border: none;
+            border-radius: 50px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            transition: background 0.2s, transform 0.15s;
+            animation: fadeUp 0.5s ease-out 0.28s both;
+        }
+
+        .btn-register:hover  { background: rgba(255,255,255,0.9); transform: translateY(-1px); }
+        .btn-register:active { transform: translateY(0); }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0 0;
+            animation: fadeUp 0.5s ease-out 0.34s both;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        .divider span {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .btn-google {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            margin-top: 12px;
+            padding: 13px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 50px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            letter-spacing: 0.3px;
+            transition: background 0.2s, border-color 0.2s, transform 0.15s;
+            animation: fadeUp 0.5s ease-out 0.4s both;
+        }
+
+        .btn-google:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn-google:active { transform: translateY(0); }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: rgba(255,255,255,0.55);
+            animation: fadeUp 0.5s ease-out 0.46s both;
+        }
+
+        .login-link a {
+            color: #fff;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .login-link a:hover { text-decoration: underline; }
+
+        @media (max-width: 480px) {
+            .card { padding: 36px 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Register</h1>
+
+        {{ form_errors(registrationForm) }}
+
+        {{ form_start(registrationForm) }}
+
+            <div class="field">
+                <label for="{{ registrationForm.username.vars.id }}">Username</label>
+                <div class="input-wrap">
+                    {{ form_widget(registrationForm.username, {
+                        'attr': {
+                            'placeholder': 'Enter your username'
+                        }
+                    }) }}
+                    <span class="ico">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </span>
+                </div>
+                {{ form_errors(registrationForm.username) }}
+            </div>
+
+            <div class="field">
+                <label for="{{ registrationForm.email.vars.id }}">Email</label>
+                <div class="input-wrap">
+                    {{ form_widget(registrationForm.email, {
+                        'attr': {
+                            'placeholder': 'Enter your email'
+                        }
+                    }) }}
+                    <span class="ico">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                    </span>
+                </div>
+                {{ form_errors(registrationForm.email) }}
+            </div>
+
+            <div class="field">
+                <label for="{{ registrationForm.plainPassword.vars.id }}">Password</label>
+                <div class="input-wrap">
+                    {{ form_widget(registrationForm.plainPassword, {
+                        'attr': {
+                            'placeholder': 'Enter your password'
+                        }
+                    }) }}
+                    <span class="ico">
+                    </span>
+                </div>
+                {{ form_errors(registrationForm.plainPassword) }}
+            </div>
+
+            <div class="terms-row">
+                {{ form_widget(registrationForm.agreeTerms) }}
+                {{ form_label(registrationForm.agreeTerms, 'I agree to the terms and conditions') }}
+            </div>
+            <div class="terms-errors">
+                {{ form_errors(registrationForm.agreeTerms) }}
+            </div>
+
+            <button type="submit" class="btn-register">Register</button>
+
+            <p class="login-link">
+                Already have an account? <a href="{{ path('app_login') }}">Login</a>
+            </p>
+
+        {{ form_end(registrationForm) }}
+    </div>
+</body>
+</html>

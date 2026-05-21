@@ -1,0 +1,112 @@
+{% extends 'layouts/admin_layout.html.twig' %}
+
+{% block title %}Transaction Report{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+
+{% block content %}
+<div class="admin-page transaction-container">
+    <div class="transaction-header-section">
+        <div class="header-left">
+            <p class="admin-page-kicker">Operations</p>
+            <h1>Transactions</h1>
+            <p>Property purchases, payment status, and installment tracking</p>
+        </div>
+        <div class="header-right">
+            {% if not is_granted('ROLE_ADMIN') and user_can_create_transaction|default(true) %}
+            <a href="{{ path('app_transaction_new') }}" class="btn btn-primary" style="color:#0f1c2e;background:#c9a227;border-color:#c9a227;">+ New transaction</a>
+            {% elseif not is_granted('ROLE_ADMIN') and not user_can_create_transaction|default(true) %}
+            <span class="btn btn-secondary" style="cursor: not-allowed; opacity: 0.7;" title="Fully pay your current transaction before creating a new one">Payment incomplete</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="admin-toolbar toolbar">
+        <div class="search-box">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <input type="text" id="searchInput" placeholder="Search transactions...">
+        </div>
+        <div class="toolbar-actions">
+            <button type="button" class="btn btn-secondary" onclick="window.print()">Export</button>
+        </div>
+    </div>
+
+    <p class="admin-table-hint">Scroll horizontally to see all columns →</p>
+    <div class="transaction-section">
+        <div class="transaction-table-wrapper">
+            <table class="transaction-table">
+                <thead>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Customer</th>
+                        <th>Property</th>
+                        <th>Purchase type</th>
+                        <th>Furniture</th>
+                        <th>Total</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions %}
+                    <tr>
+                        <td>#{{ transaction.id }}</td>
+                        <td>{{ transaction.customerName }}</td>
+                        <td>{{ transaction.propertyName }}</td>
+                        <td>{{ transaction.purchaseType|capitalize }}</td>
+                        <td>
+                            {% if transaction.transactionFurniture|length > 0 %}
+                                {% for tf in transaction.transactionFurniture %}
+                                    {{ tf.furniture.name }} (×{{ tf.quantity }}){% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <span class="admin-table-muted">None</span>
+                            {% endif %}
+                        </td>
+                        <td><span class="admin-price">₱{{ transaction.price|number_format(2, '.', ',') }}</span></td>
+                        <td>{{ transaction.date|date('Y-m-d') }}</td>
+                        <td>
+                            {% if transaction.isFullyPaid %}
+                                <span class="status-badge status-active">Fully paid</span>
+                            {% elseif transaction.payments|length > 0 %}
+                                <span class="status-badge status-pending">Downpayment received</span>
+                                {% if transaction.hasPendingInstallments %}
+                                    <div class="admin-table-muted" style="font-size:12px;margin-top:4px;">
+                                        {{ transaction.countPendingInstallments }}{% if transaction.resolvedPaymentPlanMonths %} of {{ transaction.resolvedPaymentPlanMonths }}{% endif %} installments remaining
+                                    </div>
+                                {% endif %}
+                            {% elseif is_granted('ROLE_ADMIN') or is_granted('ROLE_STAFF') %}
+                                <form method="post" action="{{ path('app_transaction_receive_payment', {'id': transaction.id}) }}" style="display:inline-block;">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('receive_payment_' ~ transaction.id) }}">
+                                    <button type="submit" class="btn btn-primary btn-sm">Receive payment</button>
+                                </form>
+                                {% if transaction.clientDownpaymentAmount is not null %}
+                                    <div class="admin-table-muted" style="font-size:12px;margin-top:4px;">Client: ₱{{ transaction.clientDownpaymentAmount|number_format(2, '.', ',') }}</div>
+                                {% endif %}
+                            {% elseif transaction.hasClientPaymentSubmission %}
+                                <span class="status-badge status-pending">Awaiting confirmation</span>
+                            {% elseif app.user and transaction.customer and app.user.id == transaction.customer.id %}
+                                <a href="{{ path('app_transaction_process_payment', {'id': transaction.id}) }}" class="btn btn-primary btn-sm">Process payment</a>
+                            {% else %}
+                                <span class="status-badge status-pending">Pending payment</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="admin-table-empty">
+                            No transactions found.{% if not is_granted('ROLE_ADMIN') %} <a href="{{ path('app_transaction_new') }}">Create a transaction</a>{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

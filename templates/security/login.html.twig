@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1920') center/cover no-repeat;
+            filter: brightness(0.7);
+            z-index: 0;
+        }
+
+        .card {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 400px;
+            margin: 10px;
+            padding: 48px 40px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 24px;
+            animation: fadeUp 0.5s ease-out both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 28px;
+            font-weight: 500;
+            text-align: center;
+            margin-bottom: 36px;
+            letter-spacing: -0.3px;
+        }
+
+        .alert {
+            padding: 10px 14px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #fff;
+            word-break: break-word;
+        }
+
+        .alert-danger { background: rgba(220, 53, 69, 0.75); }
+        .alert-success { background: rgba(40, 167, 69, 0.8); }
+        .alert-info   { background: rgba(13, 202, 240, 0.75); }
+        .alert a      { color: #fff; font-weight: 500; word-break: break-all; }
+
+        .resend-box {
+            margin-top: 20px;
+            padding-top: 18px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            animation: fadeUp 0.5s ease-out 0.52s both;
+        }
+
+        .resend-box p {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.65);
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .resend-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .resend-row input {
+            flex: 1;
+            padding: 11px 14px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            font-family: inherit;
+            font-size: 13px;
+        }
+
+        .resend-row input::placeholder { color: rgba(255, 255, 255, 0.45); }
+
+        .btn-resend {
+            padding: 11px 16px;
+            border: none;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.18);
+            color: #fff;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-resend:hover { background: rgba(255, 255, 255, 0.28); }
+
+        .field {
+            margin-bottom: 16px;
+            animation: fadeUp 0.5s ease-out both;
+        }
+
+        .field:nth-child(2) { animation-delay: 0.08s; }
+        .field:nth-child(3) { animation-delay: 0.14s; }
+
+        .field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 400;
+            color: rgba(255,255,255,0.65);
+            margin-bottom: 6px;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            padding: 13px 42px 13px 16px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 50px;
+            font-family: inherit;
+            font-size: 14px;
+            color: #fff;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .input-wrap input::placeholder { color: rgba(255,255,255,0.35); }
+
+        .input-wrap input:focus {
+            background: rgba(255, 255, 255, 0.18);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .input-wrap .ico {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255,255,255,0.45);
+            display: flex;
+            cursor: pointer;
+        }
+
+        .row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0 24px;
+            animation: fadeUp 0.5s ease-out 0.2s both;
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            color: rgba(255,255,255,0.7);
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .remember input[type="checkbox"] {
+            width: 15px;
+            height: 15px;
+            accent-color: #fff;
+            cursor: pointer;
+        }
+
+        .forgot {
+            color: rgba(255,255,255,0.7);
+            font-size: 13px;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .forgot:hover { color: #fff; }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: #fff;
+            color: #222;
+            border: none;
+            border-radius: 50px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            transition: background 0.2s, transform 0.15s;
+            animation: fadeUp 0.5s ease-out 0.28s both;
+        }
+
+        .btn-login:hover  { background: rgba(255,255,255,0.9); transform: translateY(-1px); }
+        .btn-login:active { transform: translateY(0); }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0 0;
+            animation: fadeUp 0.5s ease-out 0.34s both;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        .divider span {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .btn-google {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            margin-top: 12px;
+            padding: 13px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 50px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            letter-spacing: 0.3px;
+            transition: background 0.2s, border-color 0.2s, transform 0.15s;
+            animation: fadeUp 0.5s ease-out 0.4s both;
+        }
+
+        .btn-google:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn-google:active { transform: translateY(0); }
+
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: rgba(255,255,255,0.55);
+            animation: fadeUp 0.5s ease-out 0.46s both;
+        }
+
+        .register-link a {
+            color: #fff;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .register-link a:hover { text-decoration: underline; }
+
+        @media (max-width: 480px) {
+            .card { padding: 36px 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Login</h1>
+
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                {% set alert_class = type == 'error' ? 'danger' : (type == 'success' ? 'success' : 'info') %}
+                <div class="alert alert-{{ alert_class }}" role="alert">{{ message }}</div>
+            {% endfor %}
+        {% endfor %}
+
+        <form method="post">
+            {% if error %}
+                <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+            {% endif %}
+
+            {% if app.user %}
+                <div class="alert alert-info">
+                    You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
+                </div>
+            {% endif %}
+
+            <div class="field">
+                <label for="inputUsername">Username</label>
+                <div class="input-wrap">
+                    <input type="text"
+                           value="{{ last_username }}"
+                           name="login"
+                           id="inputUsername"
+                           placeholder="Enter your username or email"
+                           autocomplete="username"
+                           required
+                           autofocus>
+                    <span class="ico">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </span>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="inputPassword">Password</label>
+                <div class="input-wrap">
+                    <input type="password"
+                           name="password"
+                           id="inputPassword"
+                           placeholder="Enter your password"
+                           autocomplete="current-password"
+                           required>
+                    <span class="ico" onclick="togglePassword()">
+                    </span>
+                </div>
+            </div>
+
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+            <div class="row">
+                <label class="remember">
+                    <input type="checkbox" name="_remember_me" id="remember_me">
+                    Remember me
+                </label>
+                <a href="#" class="forgot">Forgot password?</a>
+            </div>
+
+            <button class="btn-login" type="submit">Login</button>
+
+            <div class="divider"><span>or</span></div>
+
+            <a href="{{ path('connect_google_start', { mode: 'login' }) }}" class="btn-google">
+                <svg width="18" height="18" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#EA4335" d="M24 9.5c3.14 0 5.95 1.08 8.17 2.85l6.08-6.08C34.46 3.07 29.52 1 24 1 14.82 1 7.01 6.48 3.44 14.27l7.08 5.5C12.29 13.59 17.69 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.52 24.5c0-1.64-.15-3.22-.42-4.74H24v8.98h12.67c-.55 2.96-2.2 5.47-4.67 7.14l7.19 5.58C43.35 37.36 46.52 31.4 46.52 24.5z"/>
+                    <path fill="#FBBC05" d="M10.52 28.23A14.6 14.6 0 0 1 9.5 24c0-1.48.25-2.91.69-4.26l-7.08-5.5A23.93 23.93 0 0 0 .5 24c0 3.87.93 7.53 2.56 10.77l7.46-6.54z"/>
+                    <path fill="#34A853" d="M24 46.5c5.52 0 10.15-1.83 13.53-4.96l-7.19-5.58c-1.83 1.23-4.17 1.95-6.34 1.95-6.31 0-11.71-4.09-13.48-9.68l-7.46 6.54C7.01 41.52 14.82 46.5 24 46.5z"/>
+                </svg>
+                Continue with Google
+            </a>
+
+            <p class="register-link">
+                Don't have an account? <a href="{{ path('app_register') }}">Register</a>
+            </p>
+
+        </form>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const p = document.getElementById('inputPassword');
+            p.type = p.type === 'password' ? 'text' : 'password';
+        }
+    </script>
+</body>
+</html>

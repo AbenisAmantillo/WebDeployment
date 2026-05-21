@@ -1,0 +1,211 @@
+{% extends 'layouts/admin_layout.html.twig' %}
+
+{% block title %}Create New Transaction{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block content %}
+    <div class="property-container">
+        <div class="property-header">
+            <h1>
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                    <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                </svg>
+                Create New Transaction
+            </h1>
+            <p>Select a property, add furniture if needed, then proceed to payment</p>
+        </div>
+
+        <div class="form-card">
+            {{ form_start(form) }}
+                <div class="form-group">
+                    {{ form_label(form.property) }}
+                    {{ form_widget(form.property) }}
+                    {{ form_errors(form.property) }}
+                </div>
+
+                <div class="form-group" style="display: none;">
+                    {{ form_widget(form.customer) }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Customer</label>
+                    <input type="text" class="form-control" value="{{ app.user.username }}" readonly style="background-color: #f3f4f6; cursor: not-allowed;">
+                    <small class="form-text text-muted">Automatically set to your logged-in account ({{ app.user.username }})</small>
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.purchaseType) }}
+                    {{ form_widget(form.purchaseType) }}
+                    {{ form_errors(form.purchaseType) }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.date) }}
+                    {{ form_widget(form.date) }}
+                    {{ form_errors(form.date) }}
+                </div>
+
+                <div class="form-group">
+                    <div class="form-check mb-3">
+                        <input type="checkbox" class="form-check-input" id="add_furniture" name="add_furniture" value="1">
+                        <label class="form-check-label" for="add_furniture">
+                            Do you want to add furniture?
+                        </label>
+                    </div>
+                </div>
+
+                <div id="furniture-section" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label">Select Furniture and Quantity</label>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Furniture Name</th>
+                                        <th>Price</th>
+                                        <th>Stock Available</th>
+                                        <th>Quantity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for furniture in available_furniture %}
+                                    <tr>
+                                        <td>{{ furniture.name }}</td>
+                                        <td>${{ furniture.price|number_format(2) }}</td>
+                                        <td>{{ furniture.stock ?? 'N/A' }}</td>
+                                        <td>
+                                            <input type="number" 
+                                                   name="furniture_quantities[{{ furniture.id }}]" 
+                                                   class="form-control" 
+                                                   min="0" 
+                                                   max="{{ furniture.stock ?? 999 }}" 
+                                                   value="0"
+                                                   style="width: 100px;">
+                                        </td>
+                                    </tr>
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted">No available furniture found.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb;">
+                    <h3 style="margin-bottom: 1rem; font-size: 1.125rem; color: #1f2937;">Payment Details</h3>
+
+                    <div id="rent-payment-fields" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label" for="payment_amount">Downpayment Amount <span style="color: #ef4444;">*</span></label>
+                            <input type="number" name="amount" id="payment_amount" class="form-control" step="0.01" min="0.01" placeholder="0.00">
+                            <small class="form-text text-muted">Enter the downpayment amount to pay now</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="payment_plan">Payment Plan <span style="color: #ef4444;">*</span></label>
+                            <select name="payment_plan" id="payment_plan" class="form-control">
+                                <option value="">-- Choose a Plan --</option>
+                                <option value="12">12 Months</option>
+                                <option value="24">24 Months</option>
+                                <option value="36">36 Months</option>
+                            </select>
+                            <small class="form-text text-muted">Choose how many months to pay the remaining balance</small>
+                        </div>
+                    </div>
+
+                    <div id="buy-payment-info" style="display: none; margin-bottom: 1rem; padding: 1rem; background: #f3f4f6; border-radius: 8px;">
+                        <p style="margin: 0; color: #374151;">Full property and furniture total will be charged in one payment.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Payment Method <span style="color: #ef4444;">*</span></label>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem;">
+                            <label style="display: flex; align-items: center; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; cursor: pointer;">
+                                <input type="radio" name="payment_method" value="debit_card" style="margin-right: 0.5rem;"> Debit Card
+                            </label>
+                            <label style="display: flex; align-items: center; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; cursor: pointer;">
+                                <input type="radio" name="payment_method" value="mobile_transfer" style="margin-right: 0.5rem;"> Mobile Transfer
+                            </label>
+                            <label style="display: flex; align-items: center; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; cursor: pointer;">
+                                <input type="radio" name="payment_method" value="bank_transfer" style="margin-right: 0.5rem;"> Bank Transfer
+                            </label>
+                            <label style="display: flex; align-items: center; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; cursor: pointer;">
+                                <input type="radio" name="payment_method" value="cash" style="margin-right: 0.5rem;"> Cash
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Proceed to Payment
+                    </button>
+                    
+                    <a href="{{ path('app_transaction_index') }}" class="btn btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        Back to List
+                    </a>
+                </div>
+            {{ form_end(form) }}
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const addFurnitureCheckbox = document.getElementById('add_furniture');
+                const furnitureSection = document.getElementById('furniture-section');
+                
+                addFurnitureCheckbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        furnitureSection.style.display = 'block';
+                    } else {
+                        furnitureSection.style.display = 'none';
+                        document.querySelectorAll('input[name^="furniture_quantities"]').forEach(input => {
+                            input.value = 0;
+                        });
+                    }
+                });
+
+                const purchaseTypeSelect = document.querySelector('select[name="transaction[purchaseType]"]');
+                const rentPaymentFields = document.getElementById('rent-payment-fields');
+                const buyPaymentInfo = document.getElementById('buy-payment-info');
+                const paymentAmount = document.getElementById('payment_amount');
+                const paymentPlan = document.getElementById('payment_plan');
+
+                function updatePaymentFields() {
+                    const isRent = purchaseTypeSelect && purchaseTypeSelect.value === 'rent';
+                    if (rentPaymentFields) {
+                        rentPaymentFields.style.display = isRent ? 'block' : 'none';
+                    }
+                    if (buyPaymentInfo) {
+                        buyPaymentInfo.style.display = isRent ? 'none' : 'block';
+                    }
+                    if (paymentAmount) {
+                        paymentAmount.required = isRent;
+                    }
+                    if (paymentPlan) {
+                        paymentPlan.required = isRent;
+                    }
+                }
+
+                if (purchaseTypeSelect) {
+                    purchaseTypeSelect.addEventListener('change', updatePaymentFields);
+                    updatePaymentFields();
+                }
+            });
+        </script>
+    </div>
+{% endblock %}
+

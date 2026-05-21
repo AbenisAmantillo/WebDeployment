@@ -1,0 +1,48 @@
+{% extends 'layouts/admin_layout.html.twig' %}
+
+{% block title %}Edit User/Staff{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block content %}
+    <div class="admin-page property-container">
+        {% include 'partials/admin_page_header.html.twig' with {
+            kicker: 'Administration',
+            title: 'Edit user / staff',
+            description: 'Update account details and permissions'
+        } only %}
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+
+        <div class="client-profile-preview">
+            {% include 'partials/user_avatar.html.twig' with { user: user, size: 'lg' } %}
+            <div>
+                <strong>{{ user.username }}</strong>
+                <p class="client-email" style="margin:0.25rem 0 0;">{{ user.email }}</p>
+                {% if user.profileImageFileName %}
+                    <p class="admin-table-muted" style="margin:0.35rem 0 0;font-size:0.8rem;">Profile photo on file</p>
+                {% else %}
+                    <p class="admin-table-muted" style="margin:0.35rem 0 0;font-size:0.8rem;">No profile photo uploaded yet</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-card">
+            {{ include('clients/_form.html.twig', {'button_label': 'Update'}) }}
+            <div class="form-actions">
+                <a href="{{ path('app_clients_index') }}" class="btn btn-secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

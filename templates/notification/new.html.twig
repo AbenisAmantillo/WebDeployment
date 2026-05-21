@@ -1,0 +1,140 @@
+{% extends 'layouts/admin_layout.html.twig' %}
+
+{% block title %}Send Client Notification{% endblock %}
+
+{% block content %}
+<div class="admin-page clients-container">
+    {% include 'partials/admin_page_header.html.twig' with {
+        kicker: 'Administration',
+        title: 'Send notification',
+        description: 'Delivered to the client via GET /api/notifications in the mobile app'
+    } only %}
+
+    <div class="admin-form-card notification-form-card">
+        {{ form_start(form, { attr: { id: 'notification-form', class: 'notification-form' } }) }}
+
+            <div class="notification-recipient-section">
+                <span class="notification-field-label">{{ form.recipient.vars.label }}</span>
+                {% if form.recipient.vars.errors|length > 0 %}
+                    <div class="admin-flash admin-flash--error" style="margin-top:0.5rem;">
+                        {{ form_errors(form.recipient) }}
+                    </div>
+                {% endif %}
+
+                <p class="admin-table-muted" style="margin:0 0 12px;">Choose a client — profile photos are loaded from the mobile app.</p>
+
+                <div class="notification-recipients-grid" id="recipient-grid" role="listbox" aria-label="Select client">
+                    {% for recipient in recipients %}
+                        <button
+                            type="button"
+                            class="recipient-pick-card"
+                            role="option"
+                            data-recipient-id="{{ recipient.id }}"
+                            data-username="{{ recipient.username }}"
+                            data-email="{{ recipient.email|default('') }}"
+                            data-has-photo="{{ recipient.profileImageFileName ? '1' : '0' }}"
+                            aria-selected="false"
+                        >
+                            {% include 'partials/user_avatar.html.twig' with { user: recipient, size: 'md' } %}
+                            <span class="recipient-pick-name">{{ recipient.username }}</span>
+                            <span class="recipient-pick-role">
+                                {% if 'ROLE_STAFF' in recipient.roles %}Staff{% else %}Client{% endif %}
+                            </span>
+                        </button>
+                    {% else %}
+                        <p class="admin-table-muted">No clients available to notify.</p>
+                    {% endfor %}
+                </div>
+
+                {{ form_widget(form.recipient, {
+                    attr: {
+                        class: 'notification-recipient-select',
+                        id: 'notification_recipient',
+                        'aria-hidden': 'true',
+                        tabindex: '-1'
+                    }
+                }) }}
+
+                <div id="selected-recipient-preview" class="client-profile-preview notification-recipient-preview" hidden>
+                    <div id="preview-avatar-slot"></div>
+                    <div>
+                        <strong id="preview-username"></strong>
+                        <p class="client-email" id="preview-email" style="margin:0.25rem 0 0;"></p>
+                        <p class="admin-table-muted" id="preview-photo-note" style="margin:0.35rem 0 0;font-size:0.8rem;"></p>
+                    </div>
+                </div>
+            </div>
+
+            {{ form_row(form.title) }}
+            {{ form_row(form.message) }}
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Send</button>
+                <a href="{{ path('app_notification_index') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+</div>
+
+<script>
+(function () {
+    const select = document.getElementById('notification_recipient');
+    const grid = document.getElementById('recipient-grid');
+    const preview = document.getElementById('selected-recipient-preview');
+    const previewAvatarSlot = document.getElementById('preview-avatar-slot');
+    const previewUsername = document.getElementById('preview-username');
+    const previewEmail = document.getElementById('preview-email');
+    const previewPhotoNote = document.getElementById('preview-photo-note');
+
+    if (!select || !grid) {
+        return;
+    }
+
+    const cards = grid.querySelectorAll('.recipient-pick-card');
+
+    function cloneAvatarFromCard(card) {
+        const avatar = card.querySelector('.avatar-circle');
+        if (!avatar || !previewAvatarSlot) {
+            return;
+        }
+        previewAvatarSlot.innerHTML = '';
+        const clone = avatar.cloneNode(true);
+        clone.classList.remove('avatar-circle--md');
+        clone.classList.add('avatar-circle--lg');
+        previewAvatarSlot.appendChild(clone);
+    }
+
+    function selectRecipient(card) {
+        const id = card.dataset.recipientId;
+        select.value = id;
+
+        cards.forEach(c => {
+            c.classList.remove('is-selected');
+            c.setAttribute('aria-selected', 'false');
+        });
+        card.classList.add('is-selected');
+        card.setAttribute('aria-selected', 'true');
+
+        previewUsername.textContent = card.dataset.username;
+        previewEmail.textContent = card.dataset.email || '';
+        previewPhotoNote.textContent = card.dataset.hasPhoto === '1'
+            ? 'Profile photo from mobile app'
+            : 'No profile photo uploaded in the app yet';
+        cloneAvatarFromCard(card);
+        preview.hidden = false;
+    }
+
+    cards.forEach(card => {
+        card.addEventListener('click', () => selectRecipient(card));
+    });
+
+    const initialId = select.value;
+    if (initialId) {
+        const initialCard = grid.querySelector('[data-recipient-id="' + initialId + '"]');
+        if (initialCard) {
+            selectRecipient(initialCard);
+        }
+    }
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'layouts/admin_layout.html.twig' %}
+
+{% block title %}Property Listings{% endblock %}
+
+{% block content %}
+<div class="admin-page property-container">
+    {% include 'partials/admin_page_header.html.twig' with {
+        kicker: 'Portfolio',
+        title: 'Property Management',
+        description: 'Manage residential and commercial listings across your portfolio',
+        actions_html: '<a href="' ~ path('app_property_new') ~ '" class="btn btn-primary" style="color:#0f1c2e;background:#c9a227;border-color:#c9a227;">+ New listing</a>'
+    } only %}
+
+    <p class="admin-table-hint">Scroll horizontally if columns are cut off →</p>
+    <div class="table-wrapper">
+        <table class="property-table">
+            <thead>
+                <tr>
+                    <th class="col-id">ID</th>
+                    <th class="col-image">Image</th>
+                    <th class="col-title">Title</th>
+                    <th class="col-location">Location</th>
+                    <th class="col-price">Price</th>
+                    <th class="col-actions">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for property in properties %}
+                    <tr>
+                        <td class="col-id">{{ property.id }}</td>
+                        <td class="col-image">
+                            {% if property.imageFileName %}
+                                <img src="{{ asset('uploads/property_images/' ~ property.imageFileName) }}"
+                                     alt="{{ property.title }}"
+                                     class="admin-table-thumb">
+                            {% else %}
+                                <span class="admin-table-muted">No image</span>
+                            {% endif %}
+                        </td>
+                        <td class="col-title"><strong>{{ property.title }}</strong></td>
+                        <td class="col-location">{{ property.address }}</td>
+                        <td class="col-price"><span class="admin-price">₱{{ property.price|number_format(2, '.', ',') }}</span></td>
+                        <td class="col-actions">
+                            <div class="actions">
+                                <a href="{{ path('app_property_show', {'id': property.id}) }}" class="btn btn-secondary btn-sm">View</a>
+                                <a href="{{ path('app_property_edit', {'id': property.id}) }}" class="btn btn-primary btn-sm">Edit</a>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="admin-table-empty">No properties found. <a href="{{ path('app_property_new') }}">Create your first listing</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+<header class="portal-header">
+    <div class="portal-header-inner">
+        <a href="{{ path('app_client_dashboard') }}" class="portal-logo">
+            <div class="logo-image"></div>
+            <span>The Amantillo Property Co.</span>
+        </a>
+        <div class="portal-header-actions">
+            {% include 'client_dashboard/_portal_nav.html.twig' %}
+            <div class="profile-dropdown" style="position: relative;">
+                <button type="button" class="portal-profile-trigger" id="portal-profile-trigger" aria-expanded="false" aria-haspopup="true">
+                    {% if app.user %}
+                        {% include 'partials/user_avatar.html.twig' with { user: app.user, size: 'sm' } %}
+                    {% else %}
+                        <span class="avatar-circle avatar-circle--sm"><span class="avatar-initials">?</span></span>
+                    {% endif %}
+                    <span class="portal-profile-name">Hi, {{ app.user ? app.user.username : 'Guest' }}</span>
+                    <span class="portal-profile-chevron">▼</span>
+                </button>
+                <div id="portal-profile-menu" class="portal-dropdown" role="menu">
+                    <div class="portal-dropdown-head">
+                        <strong>{{ app.user ? app.user.username : 'Guest' }}</strong>
+                        <span>Your property portal</span>
+                    </div>
+                    <div class="portal-dropdown-body">
+                        {% include 'client_dashboard/_profile_dropdown_links.html.twig' %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

@@ -1,0 +1,82 @@
+{% extends 'client_dashboard/layout.html.twig' %}
+
+{% block title %}My profile{% endblock %}
+
+{% block portal_hero %}
+<section class="portal-hero portal-hero--compact">
+    <div class="portal-hero-inner">
+        <p class="portal-hero-kicker">Account</p>
+        <h1>My profile</h1>
+        <p class="portal-hero-lead">Update your display name, photo, and password</p>
+    </div>
+</section>
+{% endblock %}
+
+{% block portal_content %}
+    {% for message in app.flashes('success') %}
+        <div class="portal-alert portal-alert--success">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class="portal-alert">{{ message }}</div>
+    {% endfor %}
+
+    <div class="portal-profile-grid">
+        <section class="portal-panel">
+            <div class="portal-profile-preview">
+                {% include 'partials/user_avatar.html.twig' with { user: user, size: 'lg' } %}
+                <div>
+                    <strong>{{ user.username }}</strong>
+                    <p class="portal-payment-meta">{{ user.email }}</p>
+                </div>
+            </div>
+
+            {{ form_start(profile_form, { attr: { enctype: 'multipart/form-data', class: 'portal-form' } }) }}
+                <div class="portal-form-group">
+                    {{ form_label(profile_form.username) }}
+                    {{ form_widget(profile_form.username, { attr: { class: 'portal-input' } }) }}
+                    {{ form_errors(profile_form.username) }}
+                </div>
+                <div class="portal-form-group">
+                    {{ form_label(profile_form.email) }}
+                    {{ form_widget(profile_form.email, { attr: { class: 'portal-input' } }) }}
+                    {{ form_help(profile_form.email) }}
+                </div>
+                <div class="portal-form-group">
+                    {{ form_label(profile_form.profileImage) }}
+                    {{ form_widget(profile_form.profileImage, { attr: { class: 'portal-input' } }) }}
+                    {{ form_help(profile_form.profileImage) }}
+                    {{ form_errors(profile_form.profileImage) }}
+                </div>
+                {% if user.profileImageFileName %}
+                <div class="portal-form-group portal-form-check">
+                    {{ form_widget(profile_form.removeProfileImage) }}
+                    {{ form_label(profile_form.removeProfileImage) }}
+                </div>
+                {% endif %}
+                <button type="submit" class="portal-btn portal-btn--gold">Save profile</button>
+            {{ form_end(profile_form) }}
+        </section>
+
+        <section class="portal-panel">
+            <h2 class="portal-panel-title">Change password</h2>
+            {{ form_start(password_form, { attr: { class: 'portal-form' } }) }}
+                <div class="portal-form-group">
+                    {{ form_label(password_form.currentPassword) }}
+                    {{ form_widget(password_form.currentPassword) }}
+                    {{ form_errors(password_form.currentPassword) }}
+                </div>
+                <div class="portal-form-group">
+                    {{ form_label(password_form.newPassword.first) }}
+                    {{ form_widget(password_form.newPassword.first) }}
+                    {{ form_errors(password_form.newPassword.first) }}
+                </div>
+                <div class="portal-form-group">
+                    {{ form_label(password_form.newPassword.second) }}
+                    {{ form_widget(password_form.newPassword.second) }}
+                    {{ form_errors(password_form.newPassword.second) }}
+                </div>
+                <button type="submit" class="portal-btn portal-btn--primary">Update password</button>
+            {{ form_end(password_form) }}
+        </section>
+    </div>
+{% endblock %}

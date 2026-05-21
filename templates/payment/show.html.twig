@@ -1,0 +1,92 @@
+{% extends 'layouts/admin_layout.html.twig' %}
+
+{% block title %}Payment Details{% endblock %}
+
+{% block content %}
+<div class="admin-page property-container">
+    {% include 'partials/admin_page_header.html.twig' with {
+        kicker: 'Operations',
+        title: 'Payment details',
+        description: 'Transaction #' ~ transaction.id ~ ' — ' ~ transaction.propertyName,
+        actions_html: '<a href="' ~ path('app_payment_index') ~ '" class="btn btn-secondary" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3);color:#fff;">Back to payments</a>'
+    } only %}
+
+    <div class="admin-detail-card" style="margin-bottom:24px;">
+        <div class="metrics-row" style="margin-bottom:0;">
+            <div class="metric-card-modern metric-card-modern--revenue">
+                <div class="metric-header">
+                    <div>
+                        <div class="metric-label-modern">Total price</div>
+                        <div class="metric-value-modern" style="font-size:1.35rem;">₱{{ total_price|number_format(2, '.', ',') }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="metric-card-modern metric-card-modern--sold">
+                <div class="metric-header">
+                    <div>
+                        <div class="metric-label-modern">Total paid</div>
+                        <div class="metric-value-modern" style="font-size:1.35rem;">₱{{ total_paid|number_format(2, '.', ',') }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="metric-card-modern metric-card-modern--pending">
+                <div class="metric-header">
+                    <div>
+                        <div class="metric-label-modern">Remaining balance</div>
+                        <div class="metric-value-modern" style="font-size:1.35rem;">₱{{ remaining_balance|number_format(2, '.', ',') }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p class="admin-table-muted" style="margin-top:16px;margin-bottom:0;">
+            Customer: <strong style="color:var(--re-text);">{{ payment.customer ? payment.customer.username : 'N/A' }}</strong>
+            · Purchase type: <strong style="color:var(--re-text);">{{ transaction.purchaseType|capitalize }}</strong>
+            {% if payment_plan_months %}
+            · Payment plan: <strong style="color:var(--re-text);">{{ payment_plan_months }} months</strong>
+            · Pending installments: <strong style="color:var(--re-text);">{{ pending_count }} of {{ payment_plan_months }}</strong>
+            {% endif %}
+        </p>
+    </div>
+
+    <h3 class="metrics-section-title">Payments for this transaction</h3>
+    <div class="table-wrapper">
+        <table class="property-table">
+            <thead>
+                <tr>
+                    <th>Payment ID</th>
+                    <th>Amount</th>
+                    <th>Method</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in transaction_payments %}
+                    <tr>
+                        <td>#{{ p.id }}</td>
+                        <td><span class="admin-price">₱{{ p.amount|number_format(2, '.', ',') }}</span></td>
+                        <td>{{ p.paymentMethod }}</td>
+                        <td><span class="status-badge status-{{ p.status|lower|replace({' ': '-'}) }}">{{ p.status }}</span></td>
+                        <td>{{ p.date ? p.date|date('Y-m-d H:i') : 'N/A' }}</td>
+                        <td>
+                            {% if p.status|lower == 'submitted' %}
+                                <form method="post" action="{{ path('app_payment_confirm_submitted', {id: p.id}) }}" style="display:inline-block;">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('confirm_submitted_payment_' ~ p.id) }}">
+                                    <button type="submit" class="btn btn-primary btn-sm">Confirm</button>
+                                </form>
+                            {% else %}
+                                <span class="admin-table-muted">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="admin-table-empty">No payments found for this transaction.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

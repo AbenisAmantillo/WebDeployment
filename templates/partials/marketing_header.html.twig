@@ -1,0 +1,18 @@
+{# Optional: current = home | about | contact #}
+<header class="header">
+    <div class="nav-container">
+        <a href="{{ path('landing_page') }}" class="logo">
+            <div class="logo-image" role="img" aria-label="The Amantillo Property Co."></div>
+            <span class="logo-text">The Amantillo Property Co.</span>
+        </a>
+        <nav class="nav-main" aria-label="Primary">
+            <a href="{{ path('landing_page') }}" class="nav-link{{ current|default('') == 'home' ? ' nav-link--active' : '' }}">Home</a>
+            <a href="{{ path('app_about') }}" class="nav-link{{ current|default('') == 'about' ? ' nav-link--active' : '' }}">About</a>
+            <a href="{{ path('app_contact') }}" class="nav-link{{ current|default('') == 'contact' ? ' nav-link--active' : '' }}">Contact</a>
+        </nav>
+        <div class="nav-actions">
+            <a href="{{ path('app_login') }}" class="btn btn-login">Sign in</a>
+            <a href="{{ path('app_register') }}" class="btn btn-signup">Get started</a>
+        </div>
+    </div>
+</header>

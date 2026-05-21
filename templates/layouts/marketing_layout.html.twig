@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('styles/landing.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/marketing.css') }}">
+    {% block marketing_styles %}{% endblock %}
+{% endblock %}
+
+{% block body %}
+<div class="marketing-site">
+    {% block marketing_header %}
+        {% include 'partials/marketing_header.html.twig' with { current: marketing_nav|default('') } %}
+    {% endblock %}
+    {% block marketing_body %}{% endblock %}
+    {% include 'partials/marketing_footer.html.twig' %}
+</div>
+{% endblock %}

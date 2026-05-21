@@ -1,0 +1,61 @@
+{% extends 'layouts/admin_layout.html.twig' %}
+
+{% block title %}My account{% endblock %}
+
+{% block content %}
+    <div class="admin-page property-container">
+        {% include 'partials/admin_page_header.html.twig' with {
+            kicker: 'Account',
+            title: 'My account',
+            description: 'Update your display name and profile photo'
+        } only %}
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">{{ message }}</div>
+        {% endfor %}
+
+        <div class="client-profile-preview account-profile-preview">
+            {% include 'partials/user_avatar.html.twig' with { user: user, size: 'lg' } %}
+            <div>
+                <strong>{{ user.username }}</strong>
+                <p class="client-email" style="margin:0.25rem 0 0;">{{ user.email }}</p>
+                <p class="admin-table-muted" style="margin:0.35rem 0 0;font-size:0.8rem;">
+                    {% if 'ROLE_ADMIN' in user.roles %}Administrator{% else %}Staff{% endif %} account
+                </p>
+            </div>
+        </div>
+
+        <div class="form-card account-profile-form">
+            {{ form_start(form, { attr: { enctype: 'multipart/form-data' } }) }}
+                <div class="form-group">
+                    {{ form_label(form.username) }}
+                    {{ form_widget(form.username) }}
+                    {{ form_errors(form.username) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.email) }}
+                    {{ form_widget(form.email) }}
+                    {{ form_help(form.email) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.profileImage) }}
+                    {{ form_widget(form.profileImage) }}
+                    {{ form_help(form.profileImage) }}
+                    {{ form_errors(form.profileImage) }}
+                </div>
+                {% if user.profileImageFileName %}
+                    <div class="form-group form-check">
+                        {{ form_widget(form.removeProfileImage) }}
+                        {{ form_label(form.removeProfileImage) }}
+                    </div>
+                {% endif %}
+                <div class="form-actions" style="margin-top:1.25rem;">
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,15 @@
+.git
+.gitignore
+.env.local
+.env.*.local
+var/
+vendor/
+node_modules/
+.phpunit.cache/
+tests/
+docker-compose*.yaml
+docker-compose*.yml
+Dockerfile
+.dockerignore
+*.md
+!public/

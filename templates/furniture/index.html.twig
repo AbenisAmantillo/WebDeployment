@@ -1,0 +1,54 @@
+{% extends 'layouts/admin_layout.html.twig' %}
+
+{% block title %}Furniture Listings{% endblock %}
+
+{% block content %}
+<div class="admin-page property-container">
+    {% include 'partials/admin_page_header.html.twig' with {
+        kicker: 'Portfolio',
+        title: 'Furniture Management',
+        description: 'Manage furniture inventory bundled with property sales',
+        actions_html: '<a href="' ~ path('app_furniture_new') ~ '" class="btn btn-primary" style="color:#0f1c2e;background:#c9a227;border-color:#c9a227;">+ Add item</a>'
+    } only %}
+
+    <p class="admin-table-hint">Scroll horizontally if columns are cut off →</p>
+    <div class="table-wrapper">
+        <table class="property-table">
+            <thead>
+                <tr>
+                    <th class="col-id">ID</th>
+                    <th class="col-title">Name</th>
+                    <th class="col-price">Price</th>
+                    <th class="col-id">Stock</th>
+                    <th class="col-id">Status</th>
+                    <th class="col-actions">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for furniture in furniture %}
+                    <tr>
+                        <td class="col-id">{{ furniture.id }}</td>
+                        <td class="col-title"><strong>{{ furniture.name }}</strong></td>
+                        <td class="col-price"><span class="admin-price">₱{{ furniture.price|number_format(2, '.', ',') }}</span></td>
+                        <td class="col-id">{{ furniture.stock ?? 'N/A' }}</td>
+                        <td class="col-id">
+                            <span class="status-badge status-{{ furniture.status|lower }}">{{ furniture.status }}</span>
+                        </td>
+                        <td class="col-actions">
+                            <div class="actions">
+                                <a href="{{ path('app_furniture_show', {'id': furniture.id}) }}" class="btn btn-secondary btn-sm">View</a>
+                                <a href="{{ path('app_furniture_edit', {'id': furniture.id}) }}" class="btn btn-primary btn-sm">Edit</a>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="admin-table-empty">No furniture items found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}

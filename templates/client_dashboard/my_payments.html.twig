@@ -1,0 +1,108 @@
+{% extends 'client_dashboard/layout.html.twig' %}
+
+{% block title %}Payments{% endblock %}
+
+{% block portal_hero %}
+<section class="portal-hero portal-hero--compact">
+    <div class="portal-hero-inner">
+        <p class="portal-hero-kicker">Installments</p>
+        <h1>Payments</h1>
+        <p class="portal-hero-lead">Track your balance and pay monthly installments</p>
+    </div>
+</section>
+{% endblock %}
+
+{% block portal_content %}
+    {% if active_transaction %}
+        {% set paid = active_transaction.paidAmount %}
+        {% set total = active_transaction.price %}
+        {% set remaining = active_transaction.outstandingBalance %}
+        {% set next = active_transaction.nextPendingPayment %}
+
+        <div class="portal-payment-grid">
+            <section class="portal-panel portal-payment-summary">
+                <h2 class="portal-panel-title">Active purchase</h2>
+                <p class="portal-payment-property">{{ active_transaction.property.title }}</p>
+                <dl class="portal-stat-list">
+                    <div>
+                        <dt>Total price</dt>
+                        <dd>₱{{ total|number_format(2, '.', ',') }}</dd>
+                    </div>
+                    <div>
+                        <dt>Paid so far</dt>
+                        <dd>₱{{ paid|number_format(2, '.', ',') }}</dd>
+                    </div>
+                    <div>
+                        <dt>Remaining balance</dt>
+                        <dd>₱{{ remaining|number_format(2, '.', ',') }}</dd>
+                    </div>
+                    <div>
+                        <dt>Months left</dt>
+                        <dd>{{ active_transaction.countPendingInstallments }}</dd>
+                    </div>
+                </dl>
+                {% if active_transaction.isFullyPaid %}
+                    <p class="portal-alert portal-alert--success">This transaction is fully paid.</p>
+                {% endif %}
+            </section>
+
+            {% if next and not active_transaction.isFullyPaid %}
+            <section class="portal-panel">
+                <h2 class="portal-panel-title">Pay next installment</h2>
+                <p class="portal-payment-meta">
+                    Amount due: <strong>₱{{ next.amount|number_format(2, '.', ',') }}</strong>
+                    · Due: <strong>{{ next.date|date('M d, Y') }}</strong>
+                </p>
+                {{ form_start(installment_form, { action: path('app_client_my_payments_complete', { paymentId: next.id }) }) }}
+                    <div class="portal-form-group">
+                        {{ form_label(installment_form.paymentMethod) }}
+                        {{ form_widget(installment_form.paymentMethod) }}
+                        {{ form_errors(installment_form.paymentMethod) }}
+                    </div>
+                    <button type="submit" class="portal-btn portal-btn--gold">Complete payment</button>
+                {{ form_end(installment_form) }}
+            </section>
+            {% elseif not active_transaction.isFullyPaid %}
+            <section class="portal-panel">
+                <p class="portal-empty">No pending installment is scheduled yet. Check <a href="{{ path('app_client_my_transactions') }}">My transaction</a> for status.</p>
+            </section>
+            {% endif %}
+        </div>
+
+        <section class="portal-panel" style="margin-top:1.5rem;">
+            <h2 class="portal-panel-title">Payment history</h2>
+            <div class="transaction-table-wrapper">
+                <table class="transaction-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in active_transaction.payments %}
+                        <tr>
+                            <td>{{ payment.date|date('M d, Y') }}</td>
+                            <td>₱{{ payment.amount|number_format(2, '.', ',') }}</td>
+                            <td>{{ payment.paymentMethod|replace({'_': ' '})|title }}</td>
+                            <td>
+                                {% if payment.status|lower == 'completed' %}
+                                    <span class="status-paid">Completed</span>
+                                {% else %}
+                                    <span class="status-pending">Pending</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    {% else %}
+        <div class="portal-panel">
+            <p class="portal-empty">You do not have an active transaction yet. <a href="{{ path('app_client_dashboard') }}">Browse properties</a> to start a purchase.</p>
+        </div>
+    {% endif %}
+{% endblock %}

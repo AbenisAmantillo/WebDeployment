@@ -1,0 +1,35 @@
+{% extends 'layouts/admin_layout.html.twig' %}
+
+{% block title %}Create New User/Staff{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block content %}
+    <div class="admin-page property-container">
+        {% include 'partials/admin_page_header.html.twig' with {
+            kicker: 'Administration',
+            title: 'Create user / staff',
+            description: 'Register a new client or staff account'
+        } only %}
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+
+        <div class="form-card">
+            {{ include('clients/_form.html.twig') }}
+            <div class="form-actions">
+                <a href="{{ path('app_clients_index') }}" class="btn btn-secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

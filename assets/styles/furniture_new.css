@@ -1,0 +1,193 @@
+.property-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .property-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .property-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 0 0 0.5rem 0;
+        }
+        
+        .property-header p {
+            color: #6b7280;
+            margin: 0;
+        }
+        
+        .form-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Symfony Form Row Styling */
+        .form-card form > div {
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Label Styling */
+        .form-card label {
+            display: block;
+            font-weight: 500;
+            color: #6b7280;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+        
+        /* Input Field Styling */
+        .form-card input[type="text"],
+        .form-card input[type="number"],
+        .form-card input[type="email"],
+        .form-card input[type="password"],
+        .form-card textarea,
+        .form-card select {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 20px;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            background: #f9fafb;
+            color: #1f2937;
+            box-sizing: border-box;
+        }
+        
+        .form-card input:hover,
+        .form-card textarea:hover,
+        .form-card select:hover {
+            background: #ffffff;
+            border-color: #d1d5db;
+        }
+        
+        .form-card input:focus,
+        .form-card textarea:focus,
+        .form-card select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-card textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        .form-card input::placeholder,
+        .form-card textarea::placeholder {
+            color: #9ca3af;
+        }
+        
+        /* Error Message Styling */
+        .form-card .invalid-feedback,
+        .form-card .form-error-message,
+        .form-card ul.form-errors {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            list-style: none;
+            padding: 0;
+        }
+        
+        .form-card ul.form-errors li {
+            margin-top: 0.25rem;
+        }
+        
+        /* Invalid Input Styling */
+        .form-card input.is-invalid,
+        .form-card textarea.is-invalid,
+        .form-card select.is-invalid {
+            border-color: #dc2626;
+        }
+        
+        .form-card input.is-invalid:focus,
+        .form-card textarea.is-invalid:focus,
+        .form-card select.is-invalid:focus {
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+            margin-top: 2rem;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1.25rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+        }
+        
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+        
+        .btn svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        /* File Upload Styling */
+        .form-card input[type="file"] {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border: 2px dashed #e5e7eb;
+            border-radius: 20px;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            background: #f9fafb;
+            color: #1f2937;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+        
+        .form-card input[type="file"]:hover {
+            background: #ffffff;
+            border-color: #667eea;
+        }
+        
+        .form-card input[type="file"]:focus {
+            outline: none;
+            border-color: #667eea;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }

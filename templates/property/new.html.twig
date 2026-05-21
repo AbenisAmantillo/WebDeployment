@@ -1,0 +1,39 @@
+{% extends 'layouts/admin_layout.html.twig' %}
+
+{% block title %}Create New Property{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block content %}
+    <div class="admin-page property-container">
+        {% include 'partials/admin_page_header.html.twig' with {
+            kicker: 'Portfolio',
+            title: 'Create property listing',
+            description: 'Add a new residential or commercial listing to your portfolio'
+        } only %}
+
+        <div class="form-card">
+            {{ form_start(form) }}
+                {{ form_widget(form) }}
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Create Property
+                    </button>
+                    
+                    <a href="{{ path('app_property_index') }}" class="btn btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        Back to List
+                    </a>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends 'client_dashboard/layout.html.twig' %}
+
+{% block title %}Process Payment{% endblock %}
+
+{% block portal_hero %}
+<section class="portal-hero portal-hero--compact">
+    <div class="portal-hero-inner">
+        <a href="{{ path('app_client_my_transactions') }}" class="portal-btn-back" style="margin-bottom:1rem;color:#fff;border-color:rgba(255,255,255,0.35);background:rgba(255,255,255,0.1);">← My transaction</a>
+        <p class="portal-hero-kicker">Secure checkout</p>
+        <h1>Process payment</h1>
+        <p class="portal-hero-lead">Transaction #{{ transaction.id }} — {{ transaction.propertyName }}</p>
+    </div>
+</section>
+{% endblock %}
+
+{% block portal_content %}
+    <div class="portal-panel portal-payments" style="max-width:900px;margin:0 auto;">
+        <div class="portal-panel" style="margin-bottom:1.25rem;padding:1.25rem;">
+            <h3 class="section-title-modern" style="margin-bottom:1rem;">Transaction details</h3>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;">
+                <div>
+                    <span style="font-size:0.8rem;color:var(--cp-muted);">Customer</span>
+                    <p style="font-weight:700;margin:0.25rem 0 0;">{{ transaction.customerName }}</p>
+                </div>
+                <div>
+                    <span style="font-size:0.8rem;color:var(--cp-muted);">Property</span>
+                    <p style="font-weight:700;margin:0.25rem 0 0;">{{ transaction.propertyName }}</p>
+                </div>
+                <div>
+                    <span style="font-size:0.8rem;color:var(--cp-muted);">Purchase type</span>
+                    <p style="font-weight:700;margin:0.25rem 0 0;">{{ transaction.purchaseType|capitalize }}</p>
+                </div>
+                <div>
+                    <span style="font-size:0.8rem;color:var(--cp-muted);">Total price</span>
+                    <p style="font-weight:800;font-size:1.2rem;color:#b45309;margin:0.25rem 0 0;">₱{{ total_price|number_format(2, '.', ',') }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="portal-panel portal-payments">
+            {{ form_start(form) }}
+
+            {% if is_rent %}
+                <div style="margin-bottom:1.5rem;">
+                    <h3 class="section-title-modern" style="margin-bottom:1rem;">Rental payment plan</h3>
+                    <div style="margin-bottom:1.25rem;">
+                        {{ form_label(form.downpayment) }}
+                        {{ form_widget(form.downpayment, {'attr': {'placeholder': 'Enter downpayment amount'}}) }}
+                        {{ form_errors(form.downpayment) }}
+                        <small style="color:var(--cp-muted);display:block;margin-top:0.5rem;">Maximum: ₱{{ total_price|number_format(2, '.', ',') }}</small>
+                    </div>
+                    <div style="margin-bottom:1.25rem;">
+                        {{ form_label(form.paymentPlan) }}
+                        {{ form_widget(form.paymentPlan, {'attr': {'class': 'payment-plan-select'}}) }}
+                        {{ form_errors(form.paymentPlan) }}
+                    </div>
+                    <div id="monthly-payment-info" class="portal-alert" style="display:none;background:var(--cp-cream);border-color:var(--cp-sand);color:var(--cp-text);">
+                        <h4 style="margin-bottom:0.5rem;color:var(--cp-navy);">Payment summary</h4>
+                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;">
+                            <div><span style="font-size:0.8rem;color:var(--cp-muted);">Downpayment</span><p style="font-weight:700;margin:0.25rem 0 0;" id="downpayment-display">₱0.00</p></div>
+                            <div><span style="font-size:0.8rem;color:var(--cp-muted);">Remaining</span><p style="font-weight:700;margin:0.25rem 0 0;" id="remaining-display">₱{{ total_price|number_format(2, '.', ',') }}</p></div>
+                            <div><span style="font-size:0.8rem;color:var(--cp-muted);">Monthly</span><p style="font-weight:800;color:#047857;margin:0.25rem 0 0;" id="monthly-display">₱0.00</p></div>
+                            <div><span style="font-size:0.8rem;color:var(--cp-muted);">Term</span><p style="font-weight:700;margin:0.25rem 0 0;" id="months-display">0</p></div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div style="margin-bottom:1.5rem;">
+                {{ form_label(form.paymentMethod) }}
+                {{ form_widget(form.paymentMethod) }}
+                {{ form_errors(form.paymentMethod) }}
+            </div>
+
+            <div style="display:flex;gap:1rem;justify-content:flex-end;flex-wrap:wrap;">
+                <a href="{{ path('app_client_dashboard') }}" class="portal-btn-back">Cancel</a>
+                <button type="submit" class="portal-btn portal-btn--primary">Submit payment</button>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block portal_scripts %}
+{% if is_rent %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const totalPrice = {{ total_price }};
+    const downpaymentInput = document.querySelector('input[name="payment[downpayment]"]');
+    const paymentPlanSelect = document.querySelector('select[name="payment[paymentPlan]"]');
+    const monthlyInfo = document.getElementById('monthly-payment-info');
+    const downpaymentDisplay = document.getElementById('downpayment-display');
+    const remainingDisplay = document.getElementById('remaining-display');
+    const monthlyDisplay = document.getElementById('monthly-display');
+    const monthsDisplay = document.getElementById('months-display');
+
+    function calculateMonthlyPayment() {
+        const downpayment = parseFloat(downpaymentInput?.value) || 0;
+        const months = parseInt(paymentPlanSelect?.value) || 0;
+        if (downpayment >= 0 && months > 0) {
+            const remaining = totalPrice - downpayment;
+            const monthly = remaining / months;
+            downpaymentDisplay.textContent = '₱' + downpayment.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            remainingDisplay.textContent = '₱' + remaining.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            monthlyDisplay.textContent = '₱' + monthly.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            monthsDisplay.textContent = months + ' months';
+            monthlyInfo.style.display = 'block';
+        } else {
+            monthlyInfo.style.display = 'none';
+        }
+    }
+    if (downpaymentInput) downpaymentInput.addEventListener('input', calculateMonthlyPayment);
+    if (paymentPlanSelect) paymentPlanSelect.addEventListener('change', calculateMonthlyPayment);
+    calculateMonthlyPayment();
+});
+</script>
+{% endif %}
+{% endblock %}

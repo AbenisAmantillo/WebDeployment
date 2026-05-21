@@ -1,0 +1,106 @@
+{% extends 'client_dashboard/layout.html.twig' %}
+
+{% block title %}Client Dashboard{% endblock %}
+
+{% block portal_main_class %}portal-main--overlap{% endblock %}
+
+{% block portal_hero %}
+<section class="portal-hero">
+    <div class="portal-hero-inner">
+        <p class="portal-hero-kicker">Your property portal</p>
+        <h1>Find your <span class="hero-highlight">dream home</span></h1>
+        <p class="portal-hero-lead">Browse verified listings, compare prices, and secure your next property with The Amantillo Property Co.</p>
+    </div>
+</section>
+{% endblock %}
+
+{% block portal_content %}
+    <div class="portal-tabs">
+        <button type="button" class="portal-tab is-active" data-tab="overview">Browse listings</button>
+    </div>
+
+    {% if not can_create_transaction|default(true) %}
+    <div class="portal-alert">
+        You have an active transaction with outstanding payments. Open <strong>My transaction</strong> from your profile menu. You can start a new purchase once all payments are completed.
+    </div>
+    {% endif %}
+
+    <div id="overview-tab" class="tab-content active">
+        <section class="portal-section">
+            <div class="portal-section-head">
+                <p class="portal-section-kicker">Residential · Commercial · Land</p>
+                <h2>Featured properties</h2>
+                <p>Handpicked listings ready for viewing and purchase</p>
+            </div>
+
+            <div class="portal-listings">
+                {% for property in featured_properties %}
+                <article class="portal-listing-card">
+                    <div class="portal-listing-media">
+                        {% if property.imageFileName %}
+                            <img src="{{ asset('uploads/property_images/' ~ property.imageFileName) }}" alt="{{ property.title }}">
+                        {% else %}
+                            <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&q=80" alt="{{ property.title }}">
+                        {% endif %}
+                        <span class="portal-listing-badge">Featured</span>
+                    </div>
+                    <div class="portal-listing-body">
+                        <div class="portal-listing-price">₱{{ property.price|number_format(0, '.', ',') }}</div>
+                        <h3 class="portal-listing-title">{{ property.title }}</h3>
+                        <p class="portal-listing-location">📍 {{ property.address }}</p>
+                        {% if can_create_transaction|default(true) %}
+                            <a class="portal-btn portal-btn--gold" href="{{ path('app_client_payments', {'propertyId': property.id}) }}">Select property</a>
+                        {% else %}
+                            <span class="portal-btn portal-btn--disabled" title="Complete your current transaction first">Payment incomplete</span>
+                        {% endif %}
+                    </div>
+                </article>
+                {% else %}
+                <p class="portal-empty">No properties available at the moment. Check back soon.</p>
+                {% endfor %}
+            </div>
+        </section>
+
+        {% if available_furniture|length > 0 %}
+        <section class="portal-section">
+            <div class="portal-section-head">
+                <p class="portal-section-kicker">Home furnishings</p>
+                <h2>Available furniture</h2>
+                <p>Complete your new home with quality pieces</p>
+            </div>
+
+            <div class="portal-listings">
+                {% for furniture in available_furniture %}
+                <article class="portal-listing-card">
+                    <div class="portal-listing-media">
+                        {% if furniture.image %}
+                            <img src="{{ asset('uploads/furniture/' ~ furniture.image) }}" alt="{{ furniture.name }}">
+                        {% else %}
+                            <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&q=80" alt="{{ furniture.name }}">
+                        {% endif %}
+                        <span class="portal-listing-badge portal-listing-badge--furniture">{{ furniture.status }}</span>
+                    </div>
+                    <div class="portal-listing-body">
+                        <div class="portal-listing-price">₱{{ furniture.price|number_format(2, '.', ',') }}</div>
+                        <h3 class="portal-listing-title">{{ furniture.name }}</h3>
+                        <p class="portal-listing-location">Stock: {{ furniture.stock ?? 'N/A' }}</p>
+                        <span class="portal-btn portal-btn--primary" style="opacity:0.7;cursor:default;">Add with property</span>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block portal_scripts %}
+<script>
+document.querySelectorAll('.portal-tab').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+        document.querySelectorAll('.portal-tab').forEach(function (b) { b.classList.remove('is-active', 'active'); });
+        btn.classList.add('is-active');
+    });
+});
+</script>
+{% endblock %}

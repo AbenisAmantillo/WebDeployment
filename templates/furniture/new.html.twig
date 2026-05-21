@@ -1,0 +1,26 @@
+{% extends 'layouts/admin_layout.html.twig' %}
+
+{% block title %}Create New Furniture{% endblock %}
+
+{% block content %}
+    <div class="admin-page property-container">
+        {% include 'partials/admin_page_header.html.twig' with {
+            kicker: 'Portfolio',
+            title: 'Add furnishing',
+            description: 'Add a furniture item to the catalog'
+        } only %}
+
+        <div class="form-card">
+            {{ include('furniture/_form.html.twig') }}
+            <div class="form-actions">
+                <a href="{{ path('app_furniture_index') }}" class="btn btn-secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

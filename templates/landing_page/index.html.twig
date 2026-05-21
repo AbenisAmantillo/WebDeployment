@@ -1,0 +1,192 @@
+﻿{% extends 'layouts/marketing_layout.html.twig' %}
+
+{% block title %}The Amantillo Property Co. | Homes, rentals &amp; property services{% endblock %}
+
+{% set marketing_nav = 'home' %}
+
+{% block marketing_body %}
+    <section class="hero hero--real-estate">
+        <div class="hero-content">
+            <p class="hero-kicker">Residential sales · Rentals · Investment properties</p>
+            <h1>Find the <span class="hero-highlight">right home</span> in the right neighborhood.</h1>
+            <p class="hero-lead">Browse curated listings, compare prices, and work with agents who know local inventory whether you are buying, selling, or leasing.</p>
+            <form class="hero-search" action="{{ path('app_login') }}" method="get" role="search">
+                <label class="visually-hidden" for="hero-search-q">Search by city, barangay, or keyword</label>
+                <input id="hero-search-q" type="search" name="q" placeholder="City, neighborhood, or keyword" autocomplete="off">
+                <button type="submit" class="hero-search-btn">Search homes</button>
+            </form>
+            <div class="hero-actions">
+                <a href="{{ path('app_login') }}" class="btn btn-hero-primary">View listings</a>
+                <a href="{{ path('app_register') }}" class="btn btn-hero-secondary">List a property</a>
+            </div>
+            <p class="hero-trust">Verified addresses · Transparent pricing · Licensed advisors</p>
+        </div>
+    </section>
+
+    <section class="stats">
+        <div class="stats-container">
+            {% for stat in stats %}
+            <div class="stat-item">
+                <h3>{{ stat.number }}</h3>
+                <p>{{ stat.label }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="property-focus" aria-labelledby="property-focus-heading">
+        <div class="property-focus-inner">
+            <h2 id="property-focus-heading" class="property-focus-title">Explore by property type</h2>
+            <p class="property-focus-sub">Choose the kind of space you need — every category is represented across our marketplace.</p>
+            <ul class="property-focus-grid">
+                {% for item in property_focus %}
+                <li>
+                    <a href="{{ path('app_login') }}" class="property-focus-card">
+                        <span class="property-focus-label">{{ item.label }}</span>
+                        <span class="property-focus-blurb">{{ item.blurb }}</span>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </section>
+
+    <section class="featured">
+        <div class="section-header">
+            <p class="portal-section-kicker" style="font-size:0.7rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#c9a227;margin-bottom:0.4rem;">Listings</p>
+            <h2>Featured properties</h2>
+            <p>Recently available homes and investment properties — sign in to see full details.</p>
+        </div>
+
+        <div class="properties-grid">
+            {% for property in featured_properties %}
+            <article class="property-card">
+                <div class="property-image">
+                    {% if property.imageFileName %}
+                        <img src="{{ asset('uploads/property_images/' ~ property.imageFileName) }}" alt="{{ property.title }}">
+                    {% else %}
+                        <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&q=80" alt="{{ property.title }}">
+                    {% endif %}
+                    <span class="listing-type-badge">Residential</span>
+                    <span class="featured-badge">Featured</span>
+                </div>
+                <div class="property-details">
+                    <div class="property-price">₱{{ property.price|number_format(0, '.', ',') }} <span class="property-price-note">asking</span></div>
+                    <div class="property-title">{{ property.title }}</div>
+                    <div class="property-location">📍 {{ property.address }}</div>
+                    <div class="property-meta">
+                        <span class="property-meta-item">Status: {{ property.status|capitalize }}</span>
+                        <span class="property-meta-item">Verified listing</span>
+                    </div>
+                    <a href="{{ path('app_login') }}" class="btn-view">View listing</a>
+                </div>
+            </article>
+            {% else %}
+            <div class="empty-state">
+                <p>New listings are added regularly. Check back soon or register for alerts when homes match your criteria.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="view-all-btn">
+            <a href="{{ path('app_login') }}" class="btn btn-outline">Browse all properties</a>
+        </div>
+    </section>
+
+    <section class="how-it-works" aria-labelledby="how-heading">
+        <div class="how-it-works-inner">
+            <div class="section-header">
+                <h2 id="how-heading">How it works</h2>
+                <p>A straightforward path from browsing to keys — built for buyers, sellers, and renters.</p>
+            </div>
+            <ol class="how-steps">
+                {% for row in how_it_works %}
+                <li class="how-step">
+                    <span class="how-step-num" aria-hidden="true">{{ row.step }}</span>
+                    <div class="how-step-body">
+                        <h3>{{ row.title }}</h3>
+                        <p>{{ row.text }}</p>
+                    </div>
+                </li>
+                {% endfor %}
+            </ol>
+        </div>
+    </section>
+
+    <section class="featured featured--furniture">
+        <div class="section-header">
+            <h2>Furnish your new place</h2>
+            <p>Selected pieces to complement your home after you close.</p>
+        </div>
+
+        <div class="properties-grid">
+            {% for furniture in featured_furnitures %}
+            <article class="property-card">
+                <div class="property-image">
+                    {% if furniture.image %}
+                        <img src="{{ asset('uploads/furniture/' ~ furniture.image) }}" alt="{{ furniture.name }}">
+                    {% else %}
+                        <img src="https://images.unsplash.com/photo-1582582429413-6717b02f0f71?w=800&q=80" alt="{{ furniture.name }}">
+                    {% endif %}
+                    <span class="furniture-badge">Furniture</span>
+                </div>
+                <div class="property-details">
+                    <div class="property-price">₱{{ furniture.price|number_format(0, '.', ',') }}</div>
+                    <div class="property-title">{{ furniture.name }}</div>
+                    <div class="property-location">
+                        {% if furniture.stock is not null %}
+                            Stock: {{ furniture.stock }}
+                        {% else %}
+                            Status: {{ furniture.status }}
+                        {% endif %}
+                    </div>
+                    <a href="{{ path('app_login') }}" class="btn-view">View details</a>
+                </div>
+            </article>
+            {% else %}
+            <div class="empty-state">
+                <p>Furniture inventory updates often. Sign in to see what is in stock.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="view-all-btn">
+            <a href="{{ path('app_login') }}" class="btn btn-outline">Shop all furniture</a>
+        </div>
+    </section>
+
+    <section class="services">
+        <div class="services-container">
+            <div class="section-header">
+                <h2>Real estate services</h2>
+                <p>Everything you need in one place — from the first search to furnishing your space.</p>
+            </div>
+
+            <div class="services-grid">
+                {% for service in services %}
+                <div class="service-card">
+                    <div class="service-icon">
+                        {% if service.icon == 'home' %}🏠
+                        {% elseif service.icon == 'building' %}🏢
+                        {% elseif service.icon == 'clock' %}🕐
+                        {% elseif service.icon == 'furniture' %}🪑
+                        {% elseif service.icon == 'chart' %}📊
+                        {% endif %}
+                    </div>
+                    <h3>{{ service.title }}</h3>
+                    <p>{{ service.description }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <section class="cta">
+        <h2>Ready to tour your next address?</h2>
+        <p>Create a free account to save searches, book viewings, and list your property with The Amantillo Property Co.</p>
+        <div class="cta-buttons">
+            <a href="{{ path('app_register') }}" class="btn btn-white">Create account</a>
+            <a href="{{ path('app_contact') }}" class="btn btn-white-outline">Talk to an agent</a>
+        </div>
+    </section>
+{% endblock %}

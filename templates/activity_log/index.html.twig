@@ -1,0 +1,76 @@
+{% extends 'layouts/admin_layout.html.twig' %}
+
+{% block title %}Activity Logs{% endblock %}
+
+{% block content %}
+<div class="admin-page activity-logs-container">
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="admin-flash admin-flash--{{ label == 'error' ? 'error' : (label == 'success' ? 'success' : 'info') }}">{{ message }}</div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="activity-logs-header transaction-header-section">
+        <div class="header-left">
+            <p class="admin-page-kicker">Administration</p>
+            <h1>Activity logs</h1>
+            <p>User logins, transactions, payments, and system events</p>
+        </div>
+        {% if logs|length > 0 %}
+        <div class="header-right">
+            <form id="clear-all-form" method="POST" action="{{ path('app_activity_log_clear_all') }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('clear_all_logs') }}">
+                <button type="submit" class="clear-all-button" onclick="return confirmClearAll(event)">Clear all</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+
+    <p class="admin-table-hint">Scroll horizontally if columns are cut off →</p>
+    <div class="logs-table-wrapper">
+        {% if logs|length > 0 %}
+        <table class="logs-table">
+            <thead>
+                <tr>
+                    <th>Date / time</th>
+                    <th>User</th>
+                    <th>Role</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>{{ log.createdAt|date('Y-m-d H:i:s') }}</td>
+                    <td><strong>{% if 'ROLE_ADMIN' in log.roles %}admin{% elseif 'ROLE_STAFF' in log.roles %}staff{% elseif 'ROLE_USER' in log.roles %}client{% else %}{{ log.username }}{% endif %}</strong></td>
+                    <td>
+                        {% for role in log.roles %}
+                            <span class="role-badge role-{{ role|lower|replace({'role_': ''}) }}">{{ role }}</span>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <span class="action-badge action-{{ log.action|lower|replace({' ': '-'}) }}">{{ log.action }}</span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <h3>No activity logs</h3>
+            <p>Logs will appear once users interact with the system.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function confirmClearAll(event) {
+        event.preventDefault();
+        if (confirm('Delete all activity logs? This cannot be undone.')) {
+            document.getElementById('clear-all-form').submit();
+        }
+        return false;
+    }
+</script>
+{% endblock %}

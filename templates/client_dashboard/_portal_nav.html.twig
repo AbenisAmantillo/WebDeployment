@@ -1,0 +1,19 @@
+{% set current_route = app.request.attributes.get('_route') %}
+<nav class="portal-nav" aria-label="Client portal">
+    <a href="{{ path('app_client_dashboard') }}"
+       class="portal-nav-link{{ current_route == 'app_client_dashboard' ? ' is-active' : '' }}">
+        Browse listings
+    </a>
+    <a href="{{ path('app_client_my_transactions') }}"
+       class="portal-nav-link{{ current_route == 'app_client_my_transactions' ? ' is-active' : '' }}">
+        My transaction
+    </a>
+    <a href="{{ path('app_client_my_payments') }}"
+       class="portal-nav-link{{ current_route == 'app_client_my_payments' ? ' is-active' : '' }}">
+        Payments
+    </a>
+    <a href="{{ path('app_client_profile') }}"
+       class="portal-nav-link{{ current_route == 'app_client_profile' ? ' is-active' : '' }}">
+        My profile
+    </a>
+</nav>
