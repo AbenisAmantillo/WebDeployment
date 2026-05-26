@@ -35,3 +35,22 @@ FIREBASE_CREDENTIALS=/var/www/html/config/firebase/service-account.json
 ```
 
 Do not add `config/firebase/*.json` or `config/service-account.json` to git.
+
+## Google Sign-In
+
+Set these Railway Variables on the backend service:
+
+```text
+DEFAULT_URI=https://your-railway-app.up.railway.app
+SYMFONY_TRUSTED_PROXIES=127.0.0.1,REMOTE_ADDR
+OAUTH_GOOGLE_CLIENT_ID=your-google-oauth-client-id
+OAUTH_GOOGLE_CLIENT_SECRET=your-google-oauth-client-secret
+```
+
+In Google Cloud Console, add this Authorized redirect URI to the same OAuth client:
+
+```text
+https://your-railway-app.up.railway.app/connect/google/check
+```
+
+If Google sign-in is called from a separate frontend origin, also set `CORS_ALLOW_ORIGIN` to include that frontend URL. For a single Railway-hosted Symfony site, CORS is not involved in the `/connect/google` browser redirect flow.
