@@ -9,6 +9,10 @@ fi
 echo "Configuring Firebase credentials..."
 firebase_credentials_path="$(php bin/firebase-credentials-path.php)"
 export FIREBASE_CREDENTIALS="${firebase_credentials_path}"
+if [ -f "${firebase_credentials_path}" ] && id www-data >/dev/null 2>&1; then
+    chown www-data:www-data "${firebase_credentials_path}" 2>/dev/null || true
+    chmod 0600 "${firebase_credentials_path}" 2>/dev/null || true
+fi
 
 echo "Waiting for database..."
 until php bin/console doctrine:query:sql "SELECT 1" >/dev/null 2>&1; do
