@@ -25,6 +25,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 COPY docker/php/conf.d/app.ini /usr/local/etc/php/conf.d/app.ini
+COPY docker/php-fpm/zz-env.conf /usr/local/etc/php-fpm.d/zz-env.conf
 COPY docker/entrypoint.sh /usr/local/bin/docker-entrypoint
 RUN chmod +x /usr/local/bin/docker-entrypoint
 

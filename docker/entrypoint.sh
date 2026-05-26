@@ -6,6 +6,10 @@ if [ -z "${DATABASE_URL}" ]; then
     exit 1
 fi
 
+echo "Configuring Firebase credentials..."
+firebase_credentials_path="$(php bin/firebase-credentials-path.php)"
+export FIREBASE_CREDENTIALS="${firebase_credentials_path}"
+
 echo "Waiting for database..."
 until php bin/console doctrine:query:sql "SELECT 1" >/dev/null 2>&1; do
     sleep 2

@@ -7,6 +7,8 @@ vendor/
 node_modules/
 .phpunit.cache/
 tests/
+config/service-account.json
+config/firebase/*.json
 docker-compose*.yaml
 docker-compose*.yml
 Dockerfile

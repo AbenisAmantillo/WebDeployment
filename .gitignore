@@ -25,5 +25,6 @@
 ###< lexik/jwt-authentication-bundle ###
 
 ###> kreait/firebase-bundle ###
+/config/service-account.json
 /config/firebase/*.json
 ###< kreait/firebase-bundle ###

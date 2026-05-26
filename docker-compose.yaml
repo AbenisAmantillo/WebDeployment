@@ -46,6 +46,7 @@ services:
       OAUTH_GOOGLE_CLIENT_SECRET: ${OAUTH_GOOGLE_CLIENT_SECRET:-}
     volumes:
       - jwt_keys:/var/www/html/config/jwt
+      - ./config/firebase:/var/www/html/config/firebase:ro
       - ./public/uploads:/var/www/html/public/uploads
     depends_on:
       mysql:
