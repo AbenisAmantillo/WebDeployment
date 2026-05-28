@@ -55,10 +55,6 @@
                 <span class="sidebar-icon">◎</span>
                 <span class="sidebar-text">User Management</span>
             </a>
-            <a href="{{ path('app_activity_log_index') }}" class="sidebar-link {% if 'app_activity_log' in app.request.attributes.get('_route') %}active{% endif %}">
-                <span class="sidebar-icon">☰</span>
-                <span class="sidebar-text">Activity Logs</span>
-            </a>
             <a href="{{ path('app_notification_index') }}" class="sidebar-link {% if 'app_notification' in app.request.attributes.get('_route') %}active{% endif %}">
                 <span class="sidebar-icon">◉</span>
                 <span class="sidebar-text">Notifications</span>
