@@ -146,6 +146,39 @@
                     }
                 });
             }
+
+            // Auto-refresh admin pages so latest records and dashboard totals stay up to date.
+            const currentRoute = '{{ app.request.attributes.get('_route')|default('') }}';
+            const excludedRoutes = [
+                'app_notification_new',
+                'app_transaction_new',
+                'app_transaction_process_payment',
+                'app_property_new',
+                'app_property_edit',
+                'app_furniture_new',
+                'app_furniture_edit',
+                'app_account_profile'
+            ];
+
+            if (!excludedRoutes.includes(currentRoute)) {
+                let hasUnsavedChanges = false;
+                const formInputs = document.querySelectorAll('form input, form select, form textarea');
+
+                formInputs.forEach(function (input) {
+                    input.addEventListener('change', function () {
+                        hasUnsavedChanges = true;
+                    });
+                    input.addEventListener('input', function () {
+                        hasUnsavedChanges = true;
+                    });
+                });
+
+                setInterval(function () {
+                    if (!document.hidden && !hasUnsavedChanges) {
+                        window.location.reload();
+                    }
+                }, 3000);
+            }
         });
     </script>
 {% endblock %}
