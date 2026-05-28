@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Repository\ActivityLogRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,11 +20,31 @@ class ActivityLogController extends AbstractController
         // Ensure only admins can access
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
-        // Show all logs including admin logs
-        $logs = $activityLogRepository->findAllOrderedByDate();
+        $logs = $this->loadActivityLogListingData($activityLogRepository);
 
         return $this->render('activity_log/index.html.twig', [
             'logs' => $logs,
+        ]);
+    }
+
+    #[Route('/live-list', name: 'app_activity_log_live_list', methods: ['GET'])]
+    public function liveList(ActivityLogRepository $activityLogRepository): JsonResponse
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        $logs = $this->loadActivityLogListingData($activityLogRepository);
+
+        $tableHtml = $this->renderView('activity_log/_list_content.html.twig', [
+            'logs' => $logs,
+        ]);
+
+        $clearButtonHtml = $logs !== []
+            ? $this->renderView('activity_log/_clear_button.html.twig')
+            : '';
+
+        return $this->json([
+            'tableHtml' => $tableHtml,
+            'clearButtonHtml' => $clearButtonHtml,
         ]);
     }
 
@@ -51,6 +72,12 @@ class ActivityLogController extends AbstractController
         }
 
         return $this->redirectToRoute('app_activity_log_index');
+    }
+
+    private function loadActivityLogListingData(ActivityLogRepository $activityLogRepository): array
+    {
+        // Show all logs including admin logs
+        return $activityLogRepository->findAllOrderedByDate();
     }
 }
 

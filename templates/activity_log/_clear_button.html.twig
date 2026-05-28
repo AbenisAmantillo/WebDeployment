@@ -1,0 +1,4 @@
+<form id="clear-all-form" method="POST" action="{{ path('app_activity_log_clear_all') }}">
+    <input type="hidden" name="_token" value="{{ csrf_token('clear_all_logs') }}">
+    <button type="submit" class="clear-all-button" onclick="return confirmClearAll(event)">Clear all</button>
+</form>

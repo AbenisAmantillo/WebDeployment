@@ -1,0 +1,33 @@
+{% if logs|length > 0 %}
+<table class="logs-table">
+    <thead>
+        <tr>
+            <th>Date / time</th>
+            <th>User</th>
+            <th>Role</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for log in logs %}
+        <tr>
+            <td>{{ log.createdAt|date('Y-m-d H:i:s') }}</td>
+            <td><strong>{% if 'ROLE_ADMIN' in log.roles %}admin{% elseif 'ROLE_STAFF' in log.roles %}staff{% elseif 'ROLE_USER' in log.roles %}client{% else %}{{ log.username }}{% endif %}</strong></td>
+            <td>
+                {% for role in log.roles %}
+                    <span class="role-badge role-{{ role|lower|replace({'role_': ''}) }}">{{ role }}</span>
+                {% endfor %}
+            </td>
+            <td>
+                <span class="action-badge action-{{ log.action|lower|replace({' ': '-'}) }}">{{ log.action }}</span>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="empty-state">
+    <h3>No activity logs</h3>
+    <p>Logs will appear once users interact with the system.</p>
+</div>
+{% endif %}

@@ -1,0 +1,30 @@
+{% if notifications is empty %}
+    <div class="empty-state" style="padding:3rem;">
+        <h3>No notifications yet</h3>
+        <p>Send your first message to a client.</p>
+        <a href="{{ path('app_notification_new') }}" class="btn btn-primary" style="margin-top:1rem;">Send notification</a>
+    </div>
+{% else %}
+    <table class="property-table property-table--wide">
+        <thead>
+            <tr>
+                <th class="col-title">Client</th>
+                <th class="col-title">Title</th>
+                <th class="col-location">Message</th>
+                <th class="col-price">Sent at</th>
+                <th class="col-title">By</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for notification in notifications %}
+                <tr>
+                    <td class="col-title"><strong>{{ notification.recipient.username }}</strong></td>
+                    <td class="col-title">{{ notification.title ?: '—' }}</td>
+                    <td class="col-location">{{ notification.message }}</td>
+                    <td class="col-price">{{ notification.createdAt|date('Y-m-d H:i') }}</td>
+                    <td class="col-title">{{ notification.createdBy ? notification.createdBy.username : '—' }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}

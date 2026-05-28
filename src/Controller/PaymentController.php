@@ -8,6 +8,7 @@ use App\Service\ActivityLogService;
 use App\Service\StaffPaymentConfirmationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -19,8 +20,18 @@ final class PaymentController extends AbstractController
     public function index(PaymentRepository $paymentRepository): Response
     {
         return $this->render('payment/index.html.twig', [
-            'payments' => $paymentRepository->findStaffPaymentRecords(),
+            'payments' => $this->loadPaymentListingData($paymentRepository),
         ]);
+    }
+
+    #[Route('/live-rows', name: 'app_payment_live_rows', methods: ['GET'])]
+    public function liveRows(PaymentRepository $paymentRepository): JsonResponse
+    {
+        $html = $this->renderView('payment/_table_rows.html.twig', [
+            'payments' => $this->loadPaymentListingData($paymentRepository),
+        ]);
+
+        return $this->json(['html' => $html]);
     }
 
     #[Route('/{id}', name: 'app_payment_show', methods: ['GET'])]
@@ -132,6 +143,14 @@ final class PaymentController extends AbstractController
         }
 
         return $this->redirectToRoute('app_payment_index');
+    }
+
+    /**
+     * @return array<int, Payment>
+     */
+    private function loadPaymentListingData(PaymentRepository $paymentRepository): array
+    {
+        return $paymentRepository->findStaffPaymentRecords();
     }
 }
 

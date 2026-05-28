@@ -1,0 +1,177 @@
+<!-- Statistics Summary -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <h3>Total Properties</h3>
+        <p class="stat-value">{{ total_properties }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Total Furniture</h3>
+        <p class="stat-value">{{ total_furniture }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Total Transactions</h3>
+        <p class="stat-value">{{ total_transactions }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Total Payments</h3>
+        <p class="stat-value">{{ total_payments }}</p>
+    </div>
+</div>
+
+<!-- Properties Section -->
+<div class="section">
+    <div class="section-header">
+        <h2>Properties ({{ total_properties }})</h2>
+    </div>
+    {% if properties|length > 0 %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Address</th>
+                <th>Price</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for property in properties %}
+            <tr>
+                <td>#{{ property.id }}</td>
+                <td>{{ property.title }}</td>
+                <td>{{ property.address }}</td>
+                <td>₱{{ property.price|number_format(2, '.', ',') }}</td>
+                <td>
+                    <span class="badge badge-{{ property.status|lower|replace({' ': '-'}) }}">
+                        {{ property.status }}
+                    </span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <p>No properties found.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Furniture Section -->
+<div class="section">
+    <div class="section-header">
+        <h2>Furniture ({{ total_furniture }})</h2>
+    </div>
+    {% if furniture|length > 0 %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Property</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in furniture %}
+            <tr>
+                <td>#{{ item.id }}</td>
+                <td>{{ item.name }}</td>
+                <td>₱{{ item.price|number_format(2, '.', ',') }}</td>
+                <td>
+                    <span class="badge badge-{{ item.status|lower|replace({' ': '-'}) }}">
+                        {{ item.status }}
+                    </span>
+                </td>
+                <td>{{ item.property ? item.property.title : 'N/A' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <p>No furniture found.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Transactions Section -->
+<div class="section">
+    <div class="section-header">
+        <h2>Transactions ({{ total_transactions }})</h2>
+    </div>
+    {% if transactions|length > 0 %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Customer</th>
+                <th>Property</th>
+                <th>Purchase Type</th>
+                <th>Price</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in transactions %}
+            <tr>
+                <td>#{{ transaction.id }}</td>
+                <td>{{ transaction.customer ? transaction.customer.username : 'N/A' }}</td>
+                <td>{{ transaction.property ? transaction.property.title : 'N/A' }}</td>
+                <td>{{ transaction.purchaseType }}</td>
+                <td>₱{{ transaction.price|number_format(2, '.', ',') }}</td>
+                <td>{{ transaction.date ? transaction.date|date('Y-m-d H:i') : 'N/A' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <p>No transactions found.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Payments Section -->
+<div class="section">
+    <div class="section-header">
+        <h2>Payments ({{ total_payments }})</h2>
+    </div>
+    {% if payments|length > 0 %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Customer</th>
+                <th>Transaction ID</th>
+                <th>Amount</th>
+                <th>Payment Method</th>
+                <th>Status</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for payment in payments %}
+            <tr>
+                <td>#{{ payment.id }}</td>
+                <td>{{ payment.customer ? payment.customer.username : 'N/A' }}</td>
+                <td>#{{ payment.transaction ? payment.transaction.id : 'N/A' }}</td>
+                <td>₱{{ payment.amount|number_format(2, '.', ',') }}</td>
+                <td>{{ payment.paymentMethod }}</td>
+                <td>
+                    <span class="badge badge-{{ payment.status|lower|replace({' ': '-'}) }}">
+                        {{ payment.status }}
+                    </span>
+                </td>
+                <td>{{ payment.date ? payment.date|date('Y-m-d H:i') : 'N/A' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <p>No payments found.</p>
+    </div>
+    {% endif %}
+</div>

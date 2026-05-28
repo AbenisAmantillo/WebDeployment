@@ -10,6 +10,7 @@ use App\Repository\UserRepository;
 use App\Service\ActivityLogService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -23,8 +24,18 @@ class NotificationController extends AbstractController
     public function index(NotificationRepository $notificationRepository): Response
     {
         return $this->render('notification/index.html.twig', [
-            'notifications' => $notificationRepository->findAllOrderedByDate(),
+            'notifications' => $this->loadNotificationListingData($notificationRepository),
         ]);
+    }
+
+    #[Route('/live-list', name: 'app_notification_live_list', methods: ['GET'])]
+    public function liveList(NotificationRepository $notificationRepository): JsonResponse
+    {
+        $html = $this->renderView('notification/_list_content.html.twig', [
+            'notifications' => $this->loadNotificationListingData($notificationRepository),
+        ]);
+
+        return $this->json(['html' => $html]);
     }
 
     #[Route('/new', name: 'app_notification_new', methods: ['GET', 'POST'])]
@@ -73,5 +84,13 @@ class NotificationController extends AbstractController
             'form' => $form,
             'recipients' => $userRepository->findNotificationRecipients(),
         ]);
+    }
+
+    /**
+     * @return array<int, Notification>
+     */
+    private function loadNotificationListingData(NotificationRepository $notificationRepository): array
+    {
+        return $notificationRepository->findAllOrderedByDate();
     }
 }

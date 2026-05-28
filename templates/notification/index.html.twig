@@ -2,6 +2,50 @@
 
 {% block title %}Client Notifications{% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const container = document.getElementById('notificationListContainer');
+            const liveEndpoint = '{{ path('app_notification_live_list') }}';
+            let isFetching = false;
+
+            const fetchLatestList = async function () {
+                if (isFetching || !container) {
+                    return;
+                }
+
+                isFetching = true;
+                try {
+                    const response = await fetch(liveEndpoint, {
+                        method: 'GET',
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    });
+                    if (!response.ok) {
+                        return;
+                    }
+
+                    const payload = await response.json();
+                    if (typeof payload.html !== 'string') {
+                        return;
+                    }
+
+                    const nextHtml = payload.html.trim();
+                    if (container.innerHTML.trim() !== nextHtml) {
+                        container.innerHTML = nextHtml;
+                    }
+                } catch (error) {
+                    // Silently ignore transient polling failures.
+                } finally {
+                    isFetching = false;
+                }
+            };
+
+            setInterval(fetchLatestList, 5000);
+        });
+    </script>
+{% endblock %}
+
 {% block content %}
 <div class="admin-page clients-container">
     {% include 'partials/admin_page_header.html.twig' with {
@@ -19,36 +63,9 @@
 
     <p class="admin-table-hint">Scroll horizontally if columns are cut off →</p>
     <div class="table-wrapper">
-        {% if notifications is empty %}
-            <div class="empty-state" style="padding:3rem;">
-                <h3>No notifications yet</h3>
-                <p>Send your first message to a client.</p>
-                <a href="{{ path('app_notification_new') }}" class="btn btn-primary" style="margin-top:1rem;">Send notification</a>
-            </div>
-        {% else %}
-            <table class="property-table property-table--wide">
-                <thead>
-                    <tr>
-                        <th class="col-title">Client</th>
-                        <th class="col-title">Title</th>
-                        <th class="col-location">Message</th>
-                        <th class="col-price">Sent at</th>
-                        <th class="col-title">By</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for notification in notifications %}
-                        <tr>
-                            <td class="col-title"><strong>{{ notification.recipient.username }}</strong></td>
-                            <td class="col-title">{{ notification.title ?: '—' }}</td>
-                            <td class="col-location">{{ notification.message }}</td>
-                            <td class="col-price">{{ notification.createdAt|date('Y-m-d H:i') }}</td>
-                            <td class="col-title">{{ notification.createdBy ? notification.createdBy.username : '—' }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
+        <div id="notificationListContainer">
+            {% include 'notification/_list_content.html.twig' with { notifications: notifications } %}
+        </div>
     </div>
 </div>
 {% endblock %}

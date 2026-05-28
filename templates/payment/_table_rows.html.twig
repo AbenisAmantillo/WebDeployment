@@ -1,0 +1,28 @@
+{% for payment in payments %}
+    <tr>
+        <td class="col-id">#{{ payment.id }}</td>
+        <td class="col-title">{{ payment.customer ? payment.customer.username : 'N/A' }}</td>
+        <td class="col-id">{% if payment.transaction %}#{{ payment.transaction.id }}{% else %}N/A{% endif %}</td>
+        <td class="col-price"><span class="admin-price">₱{{ payment.amount|number_format(2, '.', ',') }}</span></td>
+        <td class="col-title">{{ payment.paymentMethod }}</td>
+        <td class="col-id">
+            <span class="status-badge status-{{ payment.status|lower|replace({' ': '-'}) }}">{{ payment.status }}</span>
+        </td>
+        <td class="col-price">{{ payment.date ? payment.date|date('Y-m-d H:i') : 'N/A' }}</td>
+        <td class="col-actions">
+            <div class="actions">
+                <a href="{{ path('app_payment_show', {id: payment.id}) }}" class="btn btn-secondary btn-sm">View</a>
+                {% if payment.status|lower == 'submitted' %}
+                    <form method="post" action="{{ path('app_payment_confirm_submitted', {id: payment.id}) }}" style="display:inline-block;">
+                        <input type="hidden" name="_token" value="{{ csrf_token('confirm_submitted_payment_' ~ payment.id) }}">
+                        <button type="submit" class="btn btn-primary btn-sm">Confirm</button>
+                    </form>
+                {% endif %}
+            </div>
+        </td>
+    </tr>
+{% else %}
+    <tr>
+        <td colspan="8" class="admin-table-empty">No submitted or completed payment records available.</td>
+    </tr>
+{% endfor %}

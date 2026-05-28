@@ -2,6 +2,65 @@
 
 {% block title %}Activity Logs{% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        function confirmClearAll(event) {
+            event.preventDefault();
+            if (confirm('Delete all activity logs? This cannot be undone.')) {
+                document.getElementById('clear-all-form').submit();
+            }
+            return false;
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const tableContainer = document.getElementById('activityLogListContainer');
+            const clearButtonContainer = document.getElementById('activityLogClearButtonContainer');
+            const liveEndpoint = '{{ path('app_activity_log_live_list') }}';
+            let isFetching = false;
+
+            const fetchLatestList = async function () {
+                if (isFetching || !tableContainer) {
+                    return;
+                }
+
+                isFetching = true;
+                try {
+                    const response = await fetch(liveEndpoint, {
+                        method: 'GET',
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    });
+                    if (!response.ok) {
+                        return;
+                    }
+
+                    const payload = await response.json();
+                    if (typeof payload.tableHtml !== 'string' || typeof payload.clearButtonHtml !== 'string') {
+                        return;
+                    }
+
+                    const nextTableHtml = payload.tableHtml.trim();
+                    const nextButtonHtml = payload.clearButtonHtml.trim();
+
+                    if (tableContainer.innerHTML.trim() !== nextTableHtml) {
+                        tableContainer.innerHTML = nextTableHtml;
+                    }
+
+                    if (clearButtonContainer && clearButtonContainer.innerHTML.trim() !== nextButtonHtml) {
+                        clearButtonContainer.innerHTML = nextButtonHtml;
+                    }
+                } catch (error) {
+                    // Silently ignore transient polling failures.
+                } finally {
+                    isFetching = false;
+                }
+            };
+
+            setInterval(fetchLatestList, 5000);
+        });
+    </script>
+{% endblock %}
+
 {% block content %}
 <div class="admin-page activity-logs-container">
     {% for label, messages in app.flashes %}
@@ -16,61 +75,21 @@
             <h1>Activity logs</h1>
             <p>User logins, transactions, payments, and system events</p>
         </div>
-        {% if logs|length > 0 %}
-        <div class="header-right">
+        <div class="header-right" id="activityLogClearButtonContainer">
+            {% if logs|length > 0 %}
             <form id="clear-all-form" method="POST" action="{{ path('app_activity_log_clear_all') }}">
                 <input type="hidden" name="_token" value="{{ csrf_token('clear_all_logs') }}">
                 <button type="submit" class="clear-all-button" onclick="return confirmClearAll(event)">Clear all</button>
             </form>
+            {% endif %}
         </div>
-        {% endif %}
     </div>
 
     <p class="admin-table-hint">Scroll horizontally if columns are cut off →</p>
     <div class="logs-table-wrapper">
-        {% if logs|length > 0 %}
-        <table class="logs-table">
-            <thead>
-                <tr>
-                    <th>Date / time</th>
-                    <th>User</th>
-                    <th>Role</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for log in logs %}
-                <tr>
-                    <td>{{ log.createdAt|date('Y-m-d H:i:s') }}</td>
-                    <td><strong>{% if 'ROLE_ADMIN' in log.roles %}admin{% elseif 'ROLE_STAFF' in log.roles %}staff{% elseif 'ROLE_USER' in log.roles %}client{% else %}{{ log.username }}{% endif %}</strong></td>
-                    <td>
-                        {% for role in log.roles %}
-                            <span class="role-badge role-{{ role|lower|replace({'role_': ''}) }}">{{ role }}</span>
-                        {% endfor %}
-                    </td>
-                    <td>
-                        <span class="action-badge action-{{ log.action|lower|replace({' ': '-'}) }}">{{ log.action }}</span>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-        <div class="empty-state">
-            <h3>No activity logs</h3>
-            <p>Logs will appear once users interact with the system.</p>
+        <div id="activityLogListContainer">
+            {% include 'activity_log/_list_content.html.twig' with { logs: logs } %}
         </div>
-        {% endif %}
     </div>
 </div>
-
-<script>
-    function confirmClearAll(event) {
-        event.preventDefault();
-        if (confirm('Delete all activity logs? This cannot be undone.')) {
-            document.getElementById('clear-all-form').submit();
-        }
-        return false;
-    }
-</script>
 {% endblock %}
