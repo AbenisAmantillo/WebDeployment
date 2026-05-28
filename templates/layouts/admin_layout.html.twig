@@ -162,7 +162,9 @@
 
             if (!excludedRoutes.includes(currentRoute)) {
                 let hasUnsavedChanges = false;
+                let lastKnownVersion = null;
                 const formInputs = document.querySelectorAll('form input, form select, form textarea');
+                const liveVersionEndpoint = '{{ path('app_admin_live_version') }}';
 
                 formInputs.forEach(function (input) {
                     input.addEventListener('change', function () {
@@ -173,9 +175,36 @@
                     });
                 });
 
-                setInterval(function () {
-                    if (!document.hidden && !hasUnsavedChanges) {
-                        window.location.reload();
+                setInterval(async function () {
+                    if (document.hidden || hasUnsavedChanges) {
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(liveVersionEndpoint, {
+                            method: 'GET',
+                            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                        });
+
+                        if (!response.ok) {
+                            return;
+                        }
+
+                        const payload = await response.json();
+                        if (typeof payload.version !== 'string') {
+                            return;
+                        }
+
+                        if (lastKnownVersion === null) {
+                            lastKnownVersion = payload.version;
+                            return;
+                        }
+
+                        if (lastKnownVersion !== payload.version) {
+                            window.location.reload();
+                        }
+                    } catch (error) {
+                        // Ignore temporary connectivity issues.
                     }
                 }, 3000);
             }
