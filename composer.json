@@ -51,7 +51,8 @@
         "symfony/web-link": "7.4.*",
         "symfony/yaml": "7.4.*",
         "twig/extra-bundle": "^2.12|^3.24",
-        "twig/twig": "^2.12|^3.24"
+        "twig/twig": "^2.12|^3.24",
+        "workerman/workerman": "^5.1"
     },
     "config": {
         "allow-plugins": {

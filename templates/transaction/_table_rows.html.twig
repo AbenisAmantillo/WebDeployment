@@ -1,0 +1,51 @@
+{% for transaction in transactions %}
+<tr>
+    <td>#{{ transaction.id }}</td>
+    <td>{{ transaction.customerName }}</td>
+    <td>{{ transaction.propertyName }}</td>
+    <td>{{ transaction.purchaseType|capitalize }}</td>
+    <td>
+        {% if transaction.transactionFurniture|length > 0 %}
+            {% for tf in transaction.transactionFurniture %}
+                {{ tf.furniture.name }} (×{{ tf.quantity }}){% if not loop.last %}, {% endif %}
+            {% endfor %}
+        {% else %}
+            <span class="admin-table-muted">None</span>
+        {% endif %}
+    </td>
+    <td><span class="admin-price">₱{{ transaction.price|number_format(2, '.', ',') }}</span></td>
+    <td>{{ transaction.date|date('Y-m-d') }}</td>
+    <td>
+        {% if transaction.isFullyPaid %}
+            <span class="status-badge status-active">Fully paid</span>
+        {% elseif transaction.payments|length > 0 %}
+            <span class="status-badge status-pending">Downpayment received</span>
+            {% if transaction.hasPendingInstallments %}
+                <div class="admin-table-muted" style="font-size:12px;margin-top:4px;">
+                    {{ transaction.countPendingInstallments }}{% if transaction.resolvedPaymentPlanMonths %} of {{ transaction.resolvedPaymentPlanMonths }}{% endif %} installments remaining
+                </div>
+            {% endif %}
+        {% elseif is_granted('ROLE_ADMIN') or is_granted('ROLE_STAFF') %}
+            <form method="post" action="{{ path('app_transaction_receive_payment', {'id': transaction.id}) }}" style="display:inline-block;">
+                <input type="hidden" name="_token" value="{{ csrf_token('receive_payment_' ~ transaction.id) }}">
+                <button type="submit" class="btn btn-primary btn-sm">Receive payment</button>
+            </form>
+            {% if transaction.clientDownpaymentAmount is not null %}
+                <div class="admin-table-muted" style="font-size:12px;margin-top:4px;">Client: ₱{{ transaction.clientDownpaymentAmount|number_format(2, '.', ',') }}</div>
+            {% endif %}
+        {% elseif transaction.hasClientPaymentSubmission %}
+            <span class="status-badge status-pending">Awaiting confirmation</span>
+        {% elseif app.user and transaction.customer and app.user.id == transaction.customer.id %}
+            <a href="{{ path('app_transaction_process_payment', {'id': transaction.id}) }}" class="btn btn-primary btn-sm">Process payment</a>
+        {% else %}
+            <span class="status-badge status-pending">Pending payment</span>
+        {% endif %}
+    </td>
+</tr>
+{% else %}
+<tr>
+    <td colspan="8" class="admin-table-empty">
+        No transactions found.{% if not is_granted('ROLE_ADMIN') %} <a href="{{ path('app_transaction_new') }}">Create a transaction</a>{% endif %}
+    </td>
+</tr>
+{% endfor %}

@@ -15,6 +15,7 @@ use App\Service\ActivityLogService;
 use App\Service\StaffTransactionConfirmationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
@@ -32,43 +33,28 @@ final class TransactionController extends AbstractController
             throw $this->createAccessDeniedException('You need ROLE_ADMIN, ROLE_STAFF, or ROLE_USER to access transactions.');
         }
 
-        $currentUser = $this->getUser();
-        $userCanCreateTransaction = true;
-
-        try {
-            // Use query builder to ensure transactionFurniture and payments are loaded properly
-            $transactions = $transactionRepository->createQueryBuilder('t')
-                ->leftJoin('t.transactionFurniture', 'tf')
-                ->addSelect('tf')
-                ->leftJoin('tf.furniture', 'f')
-                ->addSelect('f')
-                ->leftJoin('t.customer', 'c')
-                ->addSelect('c')
-                ->leftJoin('t.property', 'p')
-                ->addSelect('p')
-                ->leftJoin('t.payments', 'pay')
-                ->addSelect('pay')
-                ->orderBy('t.date', 'DESC')
-                ->getQuery()
-                ->getResult();
-
-            if ($currentUser && !$this->isGranted('ROLE_ADMIN')) {
-                $userCanCreateTransaction = !$transactionRepository->customerHasUnpaidTransaction($currentUser);
-            }
-        } catch (\Doctrine\DBAL\Exception\TableNotFoundException $e) {
-            throw $this->createNotFoundException('Database table not found. Please run migrations: php bin/console doctrine:migrations:migrate');
-        } catch (\Doctrine\DBAL\Exception $e) {
-            // If there's a database structure issue (e.g., column not found)
-            // This might happen if migrations haven't been run
-            $this->addFlash('error', 'Database structure mismatch. Please run migrations: php bin/console doctrine:migrations:migrate');
-            // Return empty array to avoid further errors
-            $transactions = [];
-        }
+        [$transactions, $userCanCreateTransaction] = $this->loadTransactionListingData($transactionRepository);
 
         return $this->render('transaction/index.html.twig', [
             'transactions' => $transactions,
             'user_can_create_transaction' => $userCanCreateTransaction,
         ]);
+    }
+
+    #[Route('/live-rows', name: 'app_transaction_live_rows', methods: ['GET'])]
+    public function liveRows(TransactionRepository $transactionRepository): JsonResponse
+    {
+        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_STAFF') && !$this->isGranted('ROLE_USER')) {
+            throw $this->createAccessDeniedException('You need ROLE_ADMIN, ROLE_STAFF, or ROLE_USER to access transactions.');
+        }
+
+        [$transactions] = $this->loadTransactionListingData($transactionRepository);
+
+        $html = $this->renderView('transaction/_table_rows.html.twig', [
+            'transactions' => $transactions,
+        ]);
+
+        return $this->json(['html' => $html]);
     }
 
     #[Route('/new', name: 'app_transaction_new', methods: ['GET', 'POST'])]
@@ -499,6 +485,47 @@ final class TransactionController extends AbstractController
         }
 
         return $this->redirectToRoute('app_transaction_index');
+    }
+
+    /**
+     * @return array{0: array<int, Transaction>, 1: bool}
+     */
+    private function loadTransactionListingData(TransactionRepository $transactionRepository): array
+    {
+        $currentUser = $this->getUser();
+        $userCanCreateTransaction = true;
+
+        try {
+            // Use query builder to ensure transactionFurniture and payments are loaded properly
+            $transactions = $transactionRepository->createQueryBuilder('t')
+                ->leftJoin('t.transactionFurniture', 'tf')
+                ->addSelect('tf')
+                ->leftJoin('tf.furniture', 'f')
+                ->addSelect('f')
+                ->leftJoin('t.customer', 'c')
+                ->addSelect('c')
+                ->leftJoin('t.property', 'p')
+                ->addSelect('p')
+                ->leftJoin('t.payments', 'pay')
+                ->addSelect('pay')
+                ->orderBy('t.date', 'DESC')
+                ->getQuery()
+                ->getResult();
+
+            if ($currentUser && !$this->isGranted('ROLE_ADMIN')) {
+                $userCanCreateTransaction = !$transactionRepository->customerHasUnpaidTransaction($currentUser);
+            }
+        } catch (\Doctrine\DBAL\Exception\TableNotFoundException $exception) {
+            throw $this->createNotFoundException('Database table not found. Please run migrations: php bin/console doctrine:migrations:migrate');
+        } catch (\Doctrine\DBAL\Exception) {
+            // If there's a database structure issue (e.g., column not found)
+            // This might happen if migrations haven't been run
+            $this->addFlash('error', 'Database structure mismatch. Please run migrations: php bin/console doctrine:migrations:migrate');
+            // Return empty array to avoid further errors
+            $transactions = [];
+        }
+
+        return [$transactions, $userCanCreateTransaction];
     }
 }
 
